@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Aprendices - Portal Académico</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid #960596ff;
+        }
+
+        .header-content h1 {
+            font-size: 2.2rem;
+            color: #4e064aff;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .total-count {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #5c0596ff;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .aprendices-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .aprendiz-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+        }
+
+        .aprendiz-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #3a1b3bff;
+            margin-bottom: 0.5rem;
+        }
+
+        .button {
+            display: inline-block;
+            background: #5c0596ff;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: background 0.3s ease;
+            margin-top: 2rem;
+        }
+
+        .button:hover {
+            background: #9d10b9ff;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            .header-content h1 {
+                font-size: 1.8rem;
+            }
+            .aprendices-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <h1>Lista de Aprendices</h1>
+            </div>
+            <div class="total-count">
+                <span id="total-count">{{ total_aprendices }}</span> Aprendices
+            </div>
+        </div>
+
+        <div class="aprendices-grid" id="aprendicesGrid">
+            {% for aprendiz in lista_aprendices %}
+                <div class="aprendiz-card">
+                    <div class="aprendiz-name">{{ aprendiz.nombre }} {{ aprendiz.apellido }}</div>
+                    <div class="aprendiz-name">{{ aprendiz.documento_identidad }}</div>
+                    <div class="aprendiz-name">{{ aprendiz.correo }}</div>
+                    <div class="aprendiz-name">{{ aprendiz.telefono }}</div>
+                    <div class="aprendiz-name">{{ aprendiz.fecha_nacimiento }}</div>
+                    <div class="aprendiz-name">{{ aprendiz.ciudad }}</div>
+                    <div class="aprendiz-name">{{ aprendiz.programa }}</div>
+                    <div class="aprendiz-status">
+                        <div class="status-dot"></div>
+                        Activo
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Estado vacío (oculto por defecto) -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <h3>No hay aprendices registrados</h3>
+            <p>Cuando se registren aprendices, aparecerán aquí</p>
+        </div>
+
+        <a href="/" class="button">Volver al Inicio</a>
+    </div>
+
+    <script>
+        const aprendicesGrid = document.getElementById('aprendicesGrid');
+        const emptyState = document.getElementById('emptyState');
+
+        function renderAprendices(aprendices) {
+            if (aprendices.length === 0) {
+                aprendicesGrid.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            aprendicesGrid.style.display = 'grid';
+            emptyState.style.display = 'none';
+            totalCount.textContent = aprendices.length;
+        }
+
+        // Inicializar con los datos de aprendices
+        renderAprendices({{ lista_aprendices }});
+    </script>
+</body>
+</html>
