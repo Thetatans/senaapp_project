@@ -1,79 +1,486 @@
 {% extends 'base.html' %}
-{%block title%}Lista de Instructores{%endblock%}
-{%block content%}
-<div>
-    <div>
-        <div>
-            <h2>Lista de Instructores</h2>
-            <div>
-                <span> Total: {{total_instructores}}instructores</span>
-                <a href="{%url 'admin:instructores_instructor_add'%}">Agregar Instructor
-                    Nuevo instructor
-                </a>
-            </div>
-        </div>
+{% block title %}Lista de Instructores - SENA APP{% endblock %}
+{% block content %}
+<style>
+    .page-header {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 25px;
+        padding: 2.5rem;
+        margin: 2rem auto;
+        max-width: 1200px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .page-header h2 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+
+    .header-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .total-count {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 0.8rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-add {
+        background: linear-gradient(135deg, #4CAF50, #45a049);
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-add::before {
+        content: '+ ';
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+
+    .btn-add:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 35px rgba(76, 175, 80, 0.4);
+        color: white;
+        text-decoration: none;
+    }
+
+    .table-container {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 25px;
+        padding: 2rem;
+        margin: 2rem auto;
+        max-width: 1400px;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        overflow: hidden;
+    }
+
+    .table-wrapper {
+        overflow-x: auto;
+        border-radius: 15px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0;
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        min-width: 1200px;
+    }
+
+    thead {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+    }
+
+    th {
+        padding: 1.5rem 1rem;
+        text-align: left;
+        font-weight: 700;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        position: relative;
+        white-space: nowrap;
+    }
+
+    th::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        width: 0;
+        height: 3px;
+        background: rgba(255, 255, 255, 0.5);
+        transition: all 0.3s ease;
+        transform: translateX(-50%);
+    }
+
+    tbody tr {
+        transition: all 0.3s ease;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    tbody tr:hover {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+        transform: scale(1.005);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    tbody tr:hover th::after {
+        width: 80%;
+    }
+
+    td {
+        padding: 1.2rem 1rem;
+        vertical-align: middle;
+        font-size: 0.9rem;
+        position: relative;
+        max-width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    td:nth-child(3) { /* Nombre completo */
+        max-width: 200px;
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+    td:nth-child(4) { /* Correo */
+        max-width: 220px;
+    }
+
+    td:nth-child(7) { /* Dirección */
+        max-width: 180px;
+    }
+
+    td:nth-child(10) { /* Especialidad */
+        max-width: 160px;
+    }
+
+    td strong {
+        color: #2c3e50;
+        font-weight: 700;
+        font-size: 1.05rem;
+    }
+
+    td a {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    td a:hover {
+        color: #764ba2;
+        text-decoration: underline;
+    }
+
+    .email-link {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+        padding: 0.4rem 0.8rem;
+        border-radius: 15px;
+        transition: all 0.3s ease;
+        display: inline-block;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .email-link:hover {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+        transform: translateY(-1px);
+    }
+
+    .doc-type-badge {
+        background: linear-gradient(135deg, #36D1DC, #5B86E5);
+        color: white;
+        padding: 0.3rem 0.6rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+    .education-badge {
+        background: linear-gradient(135deg, #FA709A, #FEE140);
+        color: white;
+        padding: 0.3rem 0.6rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+    .specialty-badge {
+        background: linear-gradient(135deg, #A8EDEA, #FED6E3);
+        color: #2c3e50;
+        padding: 0.3rem 0.6rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+    .btn-edit {
+        background: linear-gradient(135deg, #FFA726, #FF7043);
+        color: white;
+        padding: 0.6rem 1rem;
+        border-radius: 20px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(255, 167, 38, 0.3);
+        white-space: nowrap;
+    }
+
+    .btn-edit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(255, 167, 38, 0.4);
+        color: white;
+        text-decoration: none;
+    }
+
+    .empty-state {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 25px;
+        padding: 4rem 2rem;
+        margin: 2rem auto;
+        max-width: 800px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .empty-state h4 {
+        font-size: 2rem;
+        color: white;
+        margin-bottom: 1rem;
+        font-weight: 700;
+    }
+
+    .empty-state p {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 1.1rem;
+        line-height: 1.6;
+        margin-bottom: 2rem;
+    }
+
+    .empty-state hr {
+        border: none;
+        height: 2px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        margin: 2rem 0;
+        border-radius: 1px;
+    }
+
+    .btn-first {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 1.2rem 2.5rem;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        display: inline-block;
+    }
+
+    .btn-first:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        color: white;
+        text-decoration: none;
+    }
+
+    /* Tooltip para celdas truncadas */
+    .tooltip {
+        position: relative;
+        cursor: help;
+    }
+
+    .tooltip:hover::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.9);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        white-space: normal;
+        max-width: 200px;
+        z-index: 1000;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .page-header {
+            padding: 2rem 1.5rem;
+            margin: 1rem;
+        }
+
+        .page-header h2 {
+            font-size: 2rem;
+        }
+
+        .header-controls {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .table-container {
+            margin: 1rem;
+            padding: 1rem;
+        }
+
+        .btn-add {
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .total-count {
+            width: 100%;
+            text-align: center;
+        }
+
+        .empty-state {
+            margin: 1rem;
+            padding: 3rem 1.5rem;
+        }
+
+        .empty-state h4 {
+            font-size: 1.5rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .table-wrapper {
+            border-radius: 10px;
+        }
+
+        table {
+            border-radius: 10px;
+            min-width: 800px;
+        }
+
+        th, td {
+            padding: 0.8rem 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        .doc-type-badge,
+        .education-badge,
+        .specialty-badge {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.4rem;
+        }
+
+        .btn-edit {
+            padding: 0.5rem 0.8rem;
+            font-size: 0.8rem;
+        }
+    }
+</style>
+
+<div class="page-header">
+    <h2>👨‍🏫 Lista de Instructores</h2>
+    <div class="header-controls">
+        <span class="total-count">📊 Total: {{ total_instructores }} instructores</span>
+        <a href="{% url 'admin:instructores_instructor_add' %}" class="btn-add">
+            Nuevo Instructor
+        </a>
     </div>
 </div>
 
 {% if lista_instructores %}
-<div>
-    <div>
+<div class="table-container">
+    <div class="table-wrapper">
         <table>
             <thead>
                 <tr>
-                    <th>Documento</th>
-                    <th>Tipo de Documento</th>
-                    <th>Nombre Completo</th>
-                    <th>Correo</th>
-                    <th>Telefono</th>
-                    <th>Ciudad</th>
-                    <th>Direccion</th>
-                    <th>Nivel Educativo</th>
-                    <th>Fecha Nacimiento</th>
-                    <th>Especialidad</th>
+                    <th>📄 Documento</th>
+                    <th>🆔 Tipo Doc.</th>
+                    <th>👤 Nombre Completo</th>
+                    <th>📧 Correo</th>
+                    <th>📱 Teléfono</th>
+                    <th>🏙️ Ciudad</th>
+                    <th>🏠 Dirección</th>
+                    <th>🎓 Nivel Educativo</th>
+                    <th>📅 Fecha Nac.</th>
+                    <th>⭐ Especialidad</th>
+                    <th>⚙️ Acciones</th>
                 </tr>
-                </thead>
+            </thead>
             <tbody>
-            {% for instructor in lista_instructores %}
-            <tr>
-                    <td><strong>{{instructor.documento_identidad}}</strong></td>
-                    <td>{{instructor.tipo_documento}}</td>
-                    <td>{{instructor.nombre_completo}}</td>
-                   <td>
-                    <a href="mailto:{{instructor.correo}}">{{instructor.correo}}</a>
-                   </td>
-                    <td>{{instructor.telefono}}</td>
-                    <td>{{instructor.ciudad}}</td>
-                    <td>{{instructor.direccion}}</td>
-                    <td>{{instructor.nivel_educativo}}</td>
-                    <td>{{instructor.fecha_nacimiento|date:"d/m/Y"}}</td>
-                    <td>{{instructor.especialidad}}</td>
-                       <td>
-                            <a href="{% url 'admin:instructores_instructor_change' instructor.pk %}" >
-                                Editar
-                            </a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+                {% for instructor in lista_instructores %}
+                <tr>
+                    <td><strong>{{ instructor.documento_identidad }}</strong></td>
+                    <td>
+                        <span class="doc-type-badge">{{ instructor.tipo_documento }}</span>
+                    </td>
+                    <td class="tooltip" data-tooltip="{{ instructor.nombre_completo }}">
+                        {{ instructor.nombre_completo }}
+                    </td>
+                    <td>
+                        <a href="mailto:{{ instructor.correo }}" class="email-link tooltip" data-tooltip="{{ instructor.correo }}">
+                            {{ instructor.correo }}
+                        </a>
+                    </td>
+                    <td>{{ instructor.telefono }}</td>
+                    <td>{{ instructor.ciudad }}</td>
+                    <td class="tooltip" data-tooltip="{{ instructor.direccion }}">
+                        {{ instructor.direccion }}
+                    </td>
+                    <td>
+                        <span class="education-badge">{{ instructor.nivel_educativo }}</span>
+                    </td>
+                    <td>{{ instructor.fecha_nacimiento|date:"d/m/Y" }}</td>
+                    <td>
+                        <span class="specialty-badge tooltip" data-tooltip="{{ instructor.especialidad }}">
+                            {{ instructor.especialidad }}
+                        </span>
+                    </td>
+                    <td>
+                        <a href="{% url 'admin:instructores_instructor_change' instructor.pk %}" class="btn-edit">
+                            ✏️ Editar
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 {% else %}
-<div>
-    <div>
-        <div role="alert">
-            <h4>No hay Instructores registrados</h4>
-            <p>Aún no se han registrado Instructores en el sistema.</p>
-            <hr>
-            <p>
-                <a href="{% url 'admin:instructores_instructor_add' %}">
-                    Registrar Primer Instructor
-                </a>
-            </p>
-        </div>
-    </div>
+<div class="empty-state">
+    <h4>👨‍🏫 No hay instructores registrados</h4>
+    <p>Aún no se han registrado instructores en el sistema. ¡Comienza agregando el primer instructor!</p>
+    <hr>
+    <p>
+        <a href="{% url 'admin:instructores_instructor_add' %}" class="btn-first">
+            🚀 Registrar Primer Instructor
+        </a>
+    </p>
 </div>
 {% endif %}
 {% endblock %}
