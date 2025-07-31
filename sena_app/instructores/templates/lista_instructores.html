@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{%block title%}Lista de Instructores{%endblock%}
+{%block content%}
+<div>
+    <div>
+        <div>
+            <h2>Lista de Instructores</h2>
+            <div>
+                <span> Total: {{total_instructores}}instructores</span>
+                <a href="{%url 'admin:instructores_instructor_add'%}">Agregar Instructor
+                    Nuevo instructor
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if lista_instructores %}
+<div>
+    <div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Documento</th>
+                    <th>Tipo de Documento</th>
+                    <th>Nombre Completo</th>
+                    <th>Correo</th>
+                    <th>Telefono</th>
+                    <th>Ciudad</th>
+                    <th>Direccion</th>
+                    <th>Nivel Educativo</th>
+                    <th>Fecha Nacimiento</th>
+                    <th>Especialidad</th>
+                </tr>
+                </thead>
+            <tbody>
+            {% for instructor in lista_instructores %}
+            <tr>
+                    <td><strong>{{instructor.documento_identidad}}</strong></td>
+                    <td>{{instructor.tipo_documento}}</td>
+                    <td>{{instructor.nombre_completo}}</td>
+                   <td>
+                    <a href="mailto:{{instructor.correo}}">{{instructor.correo}}</a>
+                   </td>
+                    <td>{{instructor.telefono}}</td>
+                    <td>{{instructor.ciudad}}</td>
+                    <td>{{instructor.direccion}}</td>
+                    <td>{{instructor.nivel_educativo}}</td>
+                    <td>{{instructor.fecha_nacimiento|date:"d/m/Y"}}</td>
+                    <td>{{instructor.especialidad}}</td>
+                       <td>
+                            <a href="{% url 'admin:instructores_instructor_change' instructor.pk %}" >
+                                Editar
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<div>
+    <div>
+        <div role="alert">
+            <h4>No hay Instructores registrados</h4>
+            <p>Aún no se han registrado Instructores en el sistema.</p>
+            <hr>
+            <p>
+                <a href="{% url 'admin:instructores_instructor_add' %}">
+                    Registrar Primer Instructor
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
