@@ -3,74 +3,523 @@
 {% block title %}Lista de Programas SENA - SENA APP{% endblock %}
 
 {% block content %}
-<div>
-    <div>
-        <div>
-            <h2>Lista de Programas que el SENA ofrece</h2>
-            <div>
-                <span>Total: {{ total_programas }} Programas</span>
-                <a href="{% url 'admin:programas_programa_add' %}">
-                    Nuevo Programa
-                </a>
-            </div>
-        </div>
+<style>
+    .page-header {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 25px;
+        padding: 2.5rem;
+        margin: 2rem auto;
+        max-width: 1400px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .page-header h2 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+
+    .header-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .total-count {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 0.8rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-add {
+        background: linear-gradient(135deg, #4CAF50, #45a049);
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-add::before {
+        content: '+ ';
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+
+    .btn-add:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 35px rgba(76, 175, 80, 0.4);
+        color: white;
+        text-decoration: none;
+    }
+
+    .table-container {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 25px;
+        padding: 2rem;
+        margin: 2rem auto;
+        max-width: 1400px;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        overflow: hidden;
+    }
+
+    .table-wrapper {
+        overflow-x: auto;
+        border-radius: 15px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0;
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    thead {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+    }
+
+    th {
+        padding: 1.5rem 1rem;
+        text-align: left;
+        font-weight: 700;
+        font-size: 0.95rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        position: relative;
+        min-width: 120px;
+    }
+
+    th::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        width: 0;
+        height: 3px;
+        background: rgba(255, 255, 255, 0.5);
+        transition: all 0.3s ease;
+        transform: translateX(-50%);
+    }
+
+    tbody tr {
+        transition: all 0.3s ease;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    tbody tr:hover {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+        transform: scale(1.005);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    tbody tr:hover th::after {
+        width: 80%;
+    }
+
+    td {
+        padding: 1.2rem 1rem;
+        vertical-align: middle;
+        font-size: 0.9rem;
+        position: relative;
+        max-width: 200px;
+        word-wrap: break-word;
+    }
+
+    td strong {
+        color: #2c3e50;
+        font-weight: 700;
+        font-size: 1.05rem;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+        padding: 0.3rem 0.8rem;
+        border-radius: 15px;
+        display: inline-block;
+    }
+
+    .nivel-badge {
+        background: linear-gradient(135deg, #FF6B6B, #4ECDC4);
+        color: white;
+        padding: 0.4rem 0.8rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: inline-block;
+        text-transform: uppercase;
+    }
+
+    .modalidad-badge {
+        background: linear-gradient(135deg, #FFB74D, #FF8A65);
+        color: white;
+        padding: 0.4rem 0.8rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+    .duracion-badge {
+        background: linear-gradient(135deg, #9C27B0, #673AB7);
+        color: white;
+        padding: 0.4rem 0.8rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+    .centro-badge {
+        background: linear-gradient(135deg, #00BCD4, #009688);
+        color: white;
+        padding: 0.4rem 0.8rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+    .regional-badge {
+        background: linear-gradient(135deg, #8BC34A, #4CAF50);
+        color: white;
+        padding: 0.4rem 0.8rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+    .descripcion-cell {
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        cursor: help;
+        position: relative;
+        transition: all 0.3s ease;
+    }
+
+    .descripcion-cell::after {
+        content: attr(data-description);
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(25px);
+        border: 2px solid rgba(102, 126, 234, 0.3);
+        border-radius: 20px;
+        padding: 2rem;
+        max-width: 500px;
+        width: 90vw;
+        max-height: 70vh;
+        overflow-y: auto;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+        font-size: 1rem;
+        line-height: 1.6;
+        color: #2c3e50;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        word-wrap: break-word;
+        text-align: justify;
+    }
+
+    .descripcion-cell:hover::after {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .descripcion-cell::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .descripcion-cell:hover::before {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .descripcion-preview {
+        color: #666;
+        font-style: italic;
+    }
+
+    .btn-edit {
+        background: linear-gradient(135deg, #FFA726, #FF7043);
+        color: white;
+        padding: 0.6rem 1.2rem;
+        border-radius: 20px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(255, 167, 38, 0.3);
+    }
+
+    .btn-edit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(255, 167, 38, 0.4);
+        color: white;
+        text-decoration: none;
+    }
+
+    .empty-state {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 25px;
+        padding: 4rem 2rem;
+        margin: 2rem auto;
+        max-width: 800px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .empty-state h4 {
+        font-size: 2rem;
+        color: white;
+        margin-bottom: 1rem;
+        font-weight: 700;
+    }
+
+    .empty-state p {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 1.1rem;
+        line-height: 1.6;
+        margin-bottom: 2rem;
+    }
+
+    .empty-state hr {
+        border: none;
+        height: 2px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        margin: 2rem 0;
+        border-radius: 1px;
+    }
+
+    .btn-first {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 1.2rem 2.5rem;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        display: inline-block;
+    }
+
+    .btn-first:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        color: white;
+        text-decoration: none;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .page-header {
+            padding: 2rem 1.5rem;
+            margin: 1rem;
+        }
+
+        .page-header h2 {
+            font-size: 2rem;
+        }
+
+        .header-controls {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .table-container {
+            margin: 1rem;
+            padding: 1rem;
+        }
+
+        table {
+            font-size: 0.8rem;
+        }
+
+        th, td {
+            padding: 1rem 0.5rem;
+            min-width: 100px;
+        }
+
+        .btn-add {
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .total-count {
+            width: 100%;
+            text-align: center;
+        }
+
+        .empty-state {
+            margin: 1rem;
+            padding: 3rem 1.5rem;
+        }
+
+        .empty-state h4 {
+            font-size: 1.5rem;
+        }
+
+        .descripcion-cell {
+            max-width: 150px;
+        }
+
+        .descripcion-cell::after {
+            max-width: 400px;
+            width: 85vw;
+            padding: 1.5rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .table-wrapper {
+            border-radius: 10px;
+        }
+
+        table {
+            border-radius: 10px;
+        }
+
+        th, td {
+            padding: 0.8rem 0.3rem;
+            font-size: 0.75rem;
+        }
+
+        .nivel-badge, .modalidad-badge, .duracion-badge, .centro-badge, .regional-badge {
+            font-size: 0.7rem;
+            padding: 0.3rem 0.6rem;
+        }
+
+        .btn-edit {
+            padding: 0.5rem 0.8rem;
+            font-size: 0.8rem;
+        }
+
+        .descripcion-cell {
+            max-width: 120px;
+        }
+
+        .descripcion-cell::after {
+            max-width: 350px;
+            width: 90vw;
+            padding: 1.2rem;
+            font-size: 0.9rem;
+        }
+    }
+</style>
+
+<div class="page-header">
+    <h2>📚 Lista de Programas que el SENA ofrece</h2>
+    <div class="header-controls">
+        <span class="total-count">📊 Total: {{ total_programas }} Programas</span>
+        <a href="{% url 'admin:programas_programa_add' %}" class="btn-add">
+            Nuevo Programa
+        </a>
     </div>
 </div>
 
 {% if lista_programas %}
-<div>
-    <div >
-        <div >
-            <table>
-                <thead>
-                    <tr>
-                        <th>Codigo</th>
-                        <th>Nombre</th>
-                        <th>Nivel Formacion</th>
-                        <th>Modalidad</th>
-                        <th>Meses</th>
-                        <th>Descripcion</th>
-                        <th>Centro Formacion</th>
-                        <th>Regional</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for programa in lista_programas %}
-                    <tr>
-                        <td><strong>{{ programa.codigo}}</strong></td>
-                        <td>{{ programa.nombre }}</td>
-                        <td>{{ programa.nivel_formacion }}</td>
-                        <td>{{ programa.modalidad }}</td>
-                        <td>{{ programa.duracion_meses }}</td>
-                        <td>{{ programa.descripcion }}</td>
-                        <td>{{ programa.centro_formacion }}</td>
-                        <td>{{ programa.regional }}</td>
-                        <td>
-                            <a href="{% url 'admin:programas_programa_change' programa.pk %}" >
-                                Editar
-                            </a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+<div class="table-container">
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>🔢 Código</th>
+                    <th>📖 Nombre</th>
+                    <th>🎓 Nivel Formación</th>
+                    <th>💻 Modalidad</th>
+                    <th>⏱️ Meses</th>
+                    <th>📝 Descripción</th>
+                    <th>🏢 Centro Formación</th>
+                    <th>🌍 Regional</th>
+                    <th>⚙️ Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for programa in lista_programas %}
+                <tr>
+                    <td><strong>{{ programa.codigo }}</strong></td>
+                    <td>{{ programa.nombre }}</td>
+                    <td>
+                        <span class="nivel-badge">{{ programa.nivel_formacion }}</span>
+                    </td>
+                    <td>
+                        <span class="modalidad-badge">{{ programa.modalidad }}</span>
+                    </td>
+                    <td>
+                        <span class="duracion-badge">{{ programa.duracion_meses }} meses</span>
+                    </td>
+                    <td class="descripcion-cell" data-description="{{ programa.descripcion }}">
+                        <span class="descripcion-preview">{{ programa.descripcion|truncatechars:50 }}...</span>
+                    </td>
+                    <td>
+                        <span class="centro-badge">{{ programa.centro_formacion }}</span>
+                    </td>
+                    <td>
+                        <span class="regional-badge">{{ programa.regional }}</span>
+                    </td>
+                    <td>
+                        <a href="{% url 'admin:programas_programa_change' programa.pk %}" class="btn-edit">
+                            ✏️ Editar
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 {% else %}
-<div>
-    <div>
-        <divrole="alert">
-            <h4 >No hay Programas registrados</h4>
-            <p>Aún no se han registrado Programas en el sistema.</p>
-            <hr>
-            <p>
-                <a href="{% url 'admin:programas_programa_add' %}" >
-                    Registrar Primer Programa
-                </a>
-            </p>
-        </div>
-    </div>
+<div class="empty-state">
+    <h4>📚 No hay Programas registrados</h4>
+    <p>Aún no se han registrado Programas en el sistema. ¡Comienza agregando el primer programa!</p>
+    <hr>
+    <p>
+        <a href="{% url 'admin:programas_programa_add' %}" class="btn-first">
+            🚀 Registrar Primer Programa
+        </a>
+    </p>
 </div>
 {% endif %}
 {% endblock %}
