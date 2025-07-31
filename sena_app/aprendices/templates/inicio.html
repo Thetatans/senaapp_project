@@ -266,6 +266,9 @@
         <a href="{% url 'instructores:lista_instructores' %}" class="btn-secondary">
             Ver Instructores
         </a>
+         <a href="{% url 'programas:lista_programas' %}" class="btn-secondary">
+                Ver Programas
+            </a>
     </div>
 </div>
 
@@ -284,4 +287,13 @@
         </div>
     </div>
 </div>
+ <div class="features-section">
+        <div class="features-grid">
+            <div class="feature-card">
+                <h5>Lista de Programas</h5>
+                <p>Consulta todos los programas registrados en el sistema</p>
+                <a href="{% url 'programas:lista_programas' %}" class="feature-btn">Ver Lista</a>
+            </div>
+        </div>
+    </div>
 {% endblock %}

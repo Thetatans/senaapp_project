@@ -21,4 +21,9 @@ urlpatterns = [
     path('', include('aprendices.urls')),
     path('', include('instructores.urls')),
     path('admin/', admin.site.urls),
+    path('', include('programas.urls')),
 ]
+
+admin.site.site_header = "Panel Administrativo SENA"
+admin.site.site_title = "SENA APP"
+admin.site.index_title = "Gestión de Aprendices"
