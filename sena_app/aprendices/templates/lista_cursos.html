@@ -1,6 +1,6 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
-{% block title %}Lista de Programas SENA - SENA APP{% endblock %}
+{% block title %}Lista de Cursos SENA - SENA APP{% endblock %}
 
 {% block content %}
 <style>
@@ -11,7 +11,7 @@
         border-radius: 25px;
         padding: 2.5rem;
         margin: 2rem auto;
-        max-width: 1400px;
+        max-width: 1200px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     }
 
@@ -98,6 +98,7 @@
         border-radius: 15px;
         overflow: hidden;
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        min-width: 1200px;
     }
 
     thead {
@@ -109,11 +110,11 @@
         padding: 1.5rem 1rem;
         text-align: left;
         font-weight: 700;
-        font-size: 0.95rem;
+        font-size: 0.9rem;
         text-transform: uppercase;
         letter-spacing: 0.5px;
         position: relative;
-        min-width: 120px;
+        white-space: nowrap;
     }
 
     th::after {
@@ -135,7 +136,7 @@
 
     tbody tr:hover {
         background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
-        transform: scale(1.100);
+        transform: scale(1.005);
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     }
 
@@ -148,21 +149,50 @@
         vertical-align: middle;
         font-size: 0.9rem;
         position: relative;
-        max-width: 200px;
-        word-wrap: break-word;
+        max-width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
-    td strong {
+    td:nth-child(2) { /* Nombre curso */
+        max-width: 220px;
+        font-weight: 600;
         color: #2c3e50;
+    }
+
+    td:nth-child(3) { /* Programa */
+        max-width: 200px;
+    }
+
+    td:nth-child(4) { /* Instructor */
+        max-width: 180px;
+    }
+
+    td:nth-child(7) { /* Horario */
+        max-width: 160px;
+    }
+
+    td strong a {
+        color: #667eea;
+        text-decoration: none;
         font-weight: 700;
-        font-size: 1.05rem;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
         background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
-        padding: 0.3rem 0.8rem;
-        border-radius: 15px;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
         display: inline-block;
     }
 
-    .nivel-badge {
+    td strong a:hover {
+        color: white;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .program-badge {
         background: linear-gradient(135deg, #FF6B6B, #4ECDC4);
         color: white;
         padding: 0.4rem 0.8rem;
@@ -170,11 +200,10 @@
         font-size: 0.8rem;
         font-weight: 600;
         display: inline-block;
-        text-transform: uppercase;
     }
 
-    .modalidad-badge {
-        background: linear-gradient(135deg, #FFB74D, #FF8A65);
+    .instructor-badge {
+        background: linear-gradient(135deg, #36D1DC, #5B86E5);
         color: white;
         padding: 0.4rem 0.8rem;
         border-radius: 15px;
@@ -183,8 +212,8 @@
         display: inline-block;
     }
 
-    .duracion-badge {
-        background: linear-gradient(135deg, #9C27B0, #673AB7);
+    .schedule-badge {
+        background: linear-gradient(135deg, #FA709A, #FEE140);
         color: white;
         padding: 0.4rem 0.8rem;
         border-radius: 15px;
@@ -193,102 +222,47 @@
         display: inline-block;
     }
 
-    .centro-badge {
-        background: linear-gradient(135deg, #00BCD4, #009688);
-        color: white;
+    .status-badge {
         padding: 0.4rem 0.8rem;
         border-radius: 15px;
         font-size: 0.8rem;
         font-weight: 600;
         display: inline-block;
+        text-transform: capitalize;
     }
 
-    .regional-badge {
-        background: linear-gradient(135deg, #8BC34A, #4CAF50);
+    .status-active {
+        background: linear-gradient(135deg, #4CAF50, #45a049);
         color: white;
-        padding: 0.4rem 0.8rem;
-        border-radius: 15px;
-        font-size: 0.8rem;
+    }
+
+    .status-inactive {
+        background: linear-gradient(135deg, #FFA726, #FF7043);
+        color: white;
+    }
+
+    .status-finished {
+        background: linear-gradient(135deg, #9E9E9E, #757575);
+        color: white;
+    }
+
+    .date-cell {
         font-weight: 600;
-        display: inline-block;
-    }
-
-    .descripcion-cell {
-        max-width: 200px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        cursor: help;
-        position: relative;
-        transition: all 0.3s ease;
-    }
-
-    .descripcion-cell::after {
-        content: attr(data-description);
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: rgba(255, 255, 255, 0.98);
-        backdrop-filter: blur(25px);
-        border: 2px solid rgba(102, 126, 234, 0.3);
-        border-radius: 20px;
-        padding: 2rem;
-        max-width: 900px;
-        width: 900vw;
-        max-height: 900vh;
-        overflow-y: auto;
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
-        font-size: 1rem;
-        line-height: 1.6;
         color: #2c3e50;
-        z-index: 1000;
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.3s ease;
-        word-wrap: break-word;
-        text-align: justify;
-    }
-
-    .descripcion-cell:hover::after {
-        opacity: 1;
-        visibility: visible;
-    }
-
-    .descripcion-cell::before {
-        content: '';
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 999;
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.3s ease;
-    }
-
-    .descripcion-cell:hover::before {
-        opacity: 1;
-        visibility: visible;
-    }
-
-    .descripcion-preview {
-        color: #666;
-        font-style: italic;
+        font-family: 'Courier New', monospace;
     }
 
     .btn-edit {
         background: linear-gradient(135deg, #FFA726, #FF7043);
         color: white;
-        padding: 0.6rem 0.2rem;
+        padding: 0.6rem 1.2rem;
         border-radius: 20px;
         text-decoration: none;
-        font-weight: 700;
+        font-weight: 600;
         font-size: 0.9rem;
         transition: all 0.3s ease;
         box-shadow: 0 4px 12px rgba(255, 167, 38, 0.3);
+        white-space: nowrap;
     }
 
     .btn-edit:hover {
@@ -352,6 +326,29 @@
         text-decoration: none;
     }
 
+    /* Tooltip para celdas truncadas */
+    .tooltip {
+        position: relative;
+        cursor: help;
+    }
+
+    .tooltip:hover::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.9);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        white-space: normal;
+        max-width: 200px;
+        z-index: 1000;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
     /* Responsive Design */
     @media (max-width: 768px) {
         .page-header {
@@ -373,15 +370,6 @@
             padding: 1rem;
         }
 
-        table {
-            font-size: 0.8rem;
-        }
-
-        th, td {
-            padding: 1rem 0.5rem;
-            min-width: 100px;
-        }
-
         .btn-add {
             width: 100%;
             max-width: 300px;
@@ -400,16 +388,6 @@
         .empty-state h4 {
             font-size: 1.5rem;
         }
-
-        .descripcion-cell {
-            max-width: 150px;
-        }
-
-        .descripcion-cell::after {
-            max-width: 400px;
-            width: 85vw;
-            padding: 1.5rem;
-        }
     }
 
     @media (max-width: 480px) {
@@ -419,14 +397,18 @@
 
         table {
             border-radius: 10px;
+            min-width: 1000px;
         }
 
         th, td {
-            padding: 0.8rem 0.3rem;
-            font-size: 0.75rem;
+            padding: 0.8rem 0.5rem;
+            font-size: 0.8rem;
         }
 
-        .nivel-badge, .modalidad-badge, .duracion-badge, .centro-badge, .regional-badge {
+        .program-badge,
+        .instructor-badge,
+        .schedule-badge,
+        .status-badge {
             font-size: 0.7rem;
             padding: 0.3rem 0.6rem;
         }
@@ -435,72 +417,74 @@
             padding: 0.5rem 0.8rem;
             font-size: 0.8rem;
         }
-
-        .descripcion-cell {
-            max-width: 120px;
-        }
-
-        .descripcion-cell::after {
-            max-width: 350px;
-            width: 90vw;
-            padding: 1.2rem;
-            font-size: 0.9rem;
-        }
     }
 </style>
 
 <div class="page-header">
-    <h2>📚 Lista de Programas que el SENA ofrece</h2>
+    <h2>📚 Lista de Cursos SENA</h2>
     <div class="header-controls">
-        <span class="total-count">📊 Total: {{ total_programas }} Programas</span>
-        <a href="{% url 'admin:programas_programa_add' %}" class="btn-add">
-            Nuevo Programa
+        <span class="total-count">📊 Total: {{ total_cursos }} Cursos</span>
+        <a href="{% url 'admin:aprendices_curso_add' %}" class="btn-add">
+            Nuevo Curso
         </a>
     </div>
 </div>
 
-{% if lista_programas %}
+{% if lista_cursos %}
 <div class="table-container">
     <div class="table-wrapper">
         <table>
             <thead>
                 <tr>
-                    <th>🔢 Código</th>
-                    <th>📖 Nombre</th>
-                    <th>🎓 Nivel Formación</th>
-                    <th>💻 Modalidad</th>
-                    <th>⏱️ Meses</th>
-                    <th>📝 Descripción</th>
-                    <th>🏢 Centro Formación</th>
-                    <th>🌍 Regional</th>
+                    <th>🔢 Código Curso</th>
+                    <th>📖 Nombre Curso</th>
+                    <th>🎓 Programa de Formación</th>
+                    <th>👨‍🏫 Instructor</th>
+                    <th>📅 Fecha Inicio</th>
+                    <th>📅 Fecha Finalización</th>
+                    <th>🕒 Horario</th>
+                    <th>📊 Estado</th>
                     <th>⚙️ Acciones</th>
                 </tr>
             </thead>
             <tbody>
-                {% for programa in lista_programas %}
+                {% for curso in lista_cursos %}
                 <tr>
-                    <td><strong>{{ programa.codigo }}</strong></td>
-                    <td>{{ programa.nombre }}</td>
                     <td>
-                        <span class="nivel-badge">{{ programa.nivel_formacion }}</span>
+                        <strong>
+                            <a href="curso/{{ curso.id }}">{{ curso.codigo }}</a>
+                        </strong>
+                    </td>
+                    <td class="tooltip" data-tooltip="{{ curso.nombre }}">
+                        {{ curso.nombre }}
                     </td>
                     <td>
-                        <span class="modalidad-badge">{{ programa.modalidad }}</span>
+                        <span class="program-badge tooltip" data-tooltip="{{ curso.programa }}">
+                            {{ curso.programa }}
+                        </span>
                     </td>
                     <td>
-                        <span class="duracion-badge">{{ programa.duracion_meses }} meses</span>
+                        <span class="instructor-badge tooltip" data-tooltip="{{ curso.instructor_coordinador }}">
+                            {{ curso.instructor_coordinador }}
+                        </span>
                     </td>
-                    <td class="descripcion-cell" data-description="{{ programa.descripcion }}">
-                        <span class="descripcion-preview">{{ programa.descripcion|truncatechars:50 }}...</span>
+                    <td class="date-cell">{{ curso.fecha_inicio|date:"d/m/Y" }}</td>
+                    <td class="date-cell">{{ curso.fecha_fin|date:"d/m/Y" }}</td>
+                    <td>
+                        <span class="schedule-badge tooltip" data-tooltip="{{ curso.horario }}">
+                            {{ curso.horario }}
+                        </span>
                     </td>
                     <td>
-                        <span class="centro-badge">{{ programa.centro_formacion }}</span>
+                        <span class="status-badge 
+                            {% if curso.estado == 'Activo' %}status-active
+                            {% elif curso.estado == 'Finalizado' %}status-finished
+                            {% else %}status-inactive{% endif %}">
+                            {{ curso.estado }}
+                        </span>
                     </td>
                     <td>
-                        <span class="regional-badge">{{ programa.regional }}</span>
-                    </td>
-                    <td>
-                        <a href="{% url 'admin:programas_programa_change' programa.pk %}" class="btn-edit">
+                        <a href="{% url 'admin:aprendices_curso_change' curso.pk %}" class="btn-edit">
                             ✏️ Editar
                         </a>
                     </td>
@@ -512,12 +496,12 @@
 </div>
 {% else %}
 <div class="empty-state">
-    <h4>📚 No hay Programas registrados</h4>
-    <p>Aún no se han registrado Programas en el sistema. ¡Comienza agregando el primer programa!</p>
+    <h4>📚 No hay cursos registrados</h4>
+    <p>Aún no se han registrado cursos en el sistema. ¡Comienza agregando el primer curso!</p>
     <hr>
     <p>
-        <a href="{% url 'admin:programas_programa_add' %}" class="btn-first">
-            🚀 Registrar Primer Programa
+        <a href="{% url 'admin:aprendices_curso_add' %}" class="btn-first">
+            🚀 Registrar Primer Curso
         </a>
     </p>
 </div>

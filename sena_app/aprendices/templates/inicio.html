@@ -260,7 +260,7 @@
     <div class="divider"></div>
     <p class="hero-description">Administra y consulta la información de los aprendices e instructores de manera eficiente y moderna.</p>
     <div class="hero-buttons">
-        <a href="{% url 'aprendices:lista_aprendices' %}" class="btn-primary">
+        <a href="{% url 'aprendices:lista_aprendices' %}"class="btn-secondary">
             Ver Aprendices
         </a>
         <a href="{% url 'instructores:lista_instructores' %}" class="btn-secondary">
@@ -268,7 +268,10 @@
         </a>
          <a href="{% url 'programas:lista_programas' %}" class="btn-secondary">
                 Ver Programas
-            </a>
+        </a>
+        <a href="{% url 'aprendices:lista_cursos' %}" class="btn-secondary">
+                Ver Cursos
+        </a>
     </div>
 </div>
 
@@ -296,4 +299,15 @@
             </div>
         </div>
     </div>
+ <div class="features-section">
+        <div class="features-grid">
+            <div class="feature-card">
+                <h5>Lista de cursos</h5>
+                <p>Consulta todos los cursos registrados en el sistema</p>
+                <p> total cursos : {{ total_cursos }}</p>
+                <p> Cursos activos: {{ cursos_activos }}</p>
+                <a href="{% url 'aprendices:lista_cursos' %}" class="feature-btn">Ver Lista</a>
+            </div>
+        </div>
+</div>
 {% endblock %}

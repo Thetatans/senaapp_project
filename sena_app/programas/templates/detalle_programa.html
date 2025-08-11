@@ -1,0 +1,228 @@
+{% extends 'base.html' %}
+
+{% block title %}Detalles Programa - SENA APP{% endblock %}
+    
+{% block content %}
+    <div >
+        <!-- Breadcrumb y Navegación -->
+        <div >
+            <div >
+                <nav >
+                    <ol >
+                        <li ><a href="/" >Inicio</a></li>
+                        <li><a href="{% url 'programas:lista_programas' %}">Lista Programas</a></li>
+                        <li >{{ programa.nombre }}</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Información Principal del Programa -->
+        <div >
+            <div >
+                <div>
+                    <div>
+                        <i ></i>
+                        <h4 >Información del Programa de Formación</h4>
+                    </div>
+                    <div >
+                        <div >
+                            <div >
+                                <h2 >{{ programa.nombre }}</h2>
+                                <div >
+                                    <div >
+                                        <p>
+                                            <strong><i ></i>Código:</strong>
+                                            <span >{{ programa.codigo }}</span>
+                                        </p>
+                                    </div>
+                                    <div >
+                                        <p>
+                                            <strong><i></i>Nivel:</strong>
+                                            <span >{{ programa.get_nivel_formacion_display }}</span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div >
+                                    <div >
+                                        <p >
+                                            <strong><i ></i>Modalidad:</strong>
+                                            <span>{{ programa.get_modalidad_display }}</span>
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p>
+                                            <strong><i ></i>Centro:</strong>
+                                            <span>{{ programa.centro_formacion }}</span>
+                                        </p>
+                                    </div>
+                                </div>
+                                {% if programa.regional %}
+                                <div>
+                                    <div >
+                                        <p>
+                                            <strong><i ></i>Regional:</strong>
+                                            <span>{{ programa.regional }}</span>
+                                        </p>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div >
+            <!-- Información Detallada -->
+            <div >
+                <div >
+                    <div >
+                        <i ></i>
+                        <h5>Detalles del Programa</h5>
+                    </div>
+                    <div>
+                        <!-- Duración -->
+                        <div >
+                            <div >
+                                <div>
+                                    <h6>
+                                        <i ></i>Duración del Programa
+                                    </h6>
+                                    <h4 >{{ programa.duracion_meses }} meses</h4>
+                                    <p >{{ programa.duracion_horas }} horas formación</p>
+                                </div>
+                            </div>
+                            <div>
+                                <div>
+                                    <h6>
+                                        <i ></i>Fechas
+                                    </h6>
+                                    <p >
+                                        <i></i>
+                                        Creación: {{ programa.fecha_creacion|date:"d/m/Y" }}
+                                    </p>
+                                    <p >
+                                        <i></i>
+                                        Registro: {{ programa.fecha_registro|date:"d/m/Y" }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Descripción -->
+                        {% if programa.descripcion %}
+                        <div>
+                            <h6>
+                                <i></i>Descripción del Programa
+                            </h6>
+                            <div>
+                                <p >{{ programa.descripcion }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Competencias -->
+                        {% if programa.competencias %}
+                        <div>
+                            <h6>
+                                <i ></i>Competencias a Desarrollar
+                            </h6>
+                            <div >
+                                <p>{{ programa.competencias }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Perfil de Egreso -->
+                        {% if programa.perfil_egreso %}
+                        <div >
+                            <h6>
+                                <i ></i>Perfil de Egreso
+                            </h6>
+                            <div >
+                                <p>{{ programa.perfil_egreso }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Requisitos de Ingreso -->
+                        {% if programa.requisitos_ingreso %}
+                        <div >
+                            <h6 >
+                                <i ></i>Requisitos de Ingreso
+                            </h6>
+                            <div>
+                                <p>{{ programa.requisitos_ingreso }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cursos del Programa -->
+        <div>
+            <div>
+                <div>
+                    <div>
+                        <div>
+                            <i ></i>
+                            <h5>Cursos del Programa</h5>
+                        </div>
+                        <span>{{ cursos|length }} cursos</span>
+                    </div>
+                    <div>
+                        {% if cursos %}
+                            <div >
+                                {% for curso in cursos %}
+                                <div>
+                                    <div>
+                                        <div>
+                                            <div >
+                                                <div>
+                                                    <h6 >{{ curso.nombre }}</h6>
+                                                    <p >
+                                                        <small>
+                                                            <i ></i>{{ curso.codigo }}
+                                                        </small>
+                                                    </p>
+                                                    {% if curso.descripcion %}
+                                                    <p >
+                                                        <small >{{ curso.descripcion|truncatewords:15 }}</small>
+                                                    </p>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div >
+                                                <small>
+                                                    <i ></i>
+                                                    {% if curso.fecha_inicio %}
+                                                        {{ curso.fecha_inicio|date:"M Y" }}
+                                                    {% else %}
+                                                        Por definir
+                                                    {% endif %}
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div >
+                                <i ></i>
+                                <h5 >No hay cursos registrados</h5>
+                                <p >Este programa aún no tiene cursos asociados</p>
+                                <button >
+                                    <i ></i>Agregar Primer Curso
+                                </button>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endblock %}

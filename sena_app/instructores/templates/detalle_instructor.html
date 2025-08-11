@@ -1,0 +1,695 @@
+{% extends 'base.html' %}
+
+{% block title %}Detalles Instructor - SENA APP{% endblock %}
+
+{% block content %}
+<style>
+    .breadcrumb-container {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 20px;
+        padding: 1.5rem 2rem;
+        margin: 1.5rem auto;
+        max-width: 1200px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .breadcrumb {
+        list-style: none;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 1rem;
+        margin: 0;
+        padding: 0;
+        color: white;
+    }
+
+    .breadcrumb li {
+        display: flex;
+        align-items: center;
+        font-size: 0.95rem;
+    }
+
+    .breadcrumb li:not(:last-child)::after {
+        content: '›';
+        margin-left: 1rem;
+        font-size: 1.2rem;
+        opacity: 0.6;
+        font-weight: bold;
+    }
+
+    .breadcrumb a {
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        transition: all 0.3s ease;
+        padding: 0.3rem 0.8rem;
+        border-radius: 15px;
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .breadcrumb a:hover {
+        color: white;
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-1px);
+    }
+
+    .breadcrumb li:last-child {
+        font-weight: 700;
+        color: white;
+    }
+
+    .instructor-profile {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 30px;
+        padding: 3rem;
+        margin: 2rem auto;
+        max-width: 1200px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .instructor-profile::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+    }
+
+    .profile-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2.5rem;
+        color: #2c3e50;
+    }
+
+    .profile-header i {
+        font-size: 2rem;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .profile-header h4 {
+        font-size: 2rem;
+        font-weight: 800;
+        margin: 0;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .instructor-main-info {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 2.5rem;
+        align-items: start;
+    }
+
+    .avatar-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        min-width: 200px;
+    }
+
+    .instructor-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        font-weight: bold;
+        color: white;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    .instructor-avatar:hover {
+        transform: translateY(-5px) rotate(5deg);
+        box-shadow: 0 20px 45px rgba(102, 126, 234, 0.4);
+    }
+
+    .instructor-name {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #2c3e50;
+        margin-bottom: 1rem;
+    }
+
+    .status-badge {
+        padding: 0.6rem 1.2rem;
+        border-radius: 25px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .status-active {
+        background: linear-gradient(135deg, #4CAF50, #45a049);
+        color: white;
+        box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+    }
+
+    .status-inactive {
+        background: linear-gradient(135deg, #f44336, #d32f2f);
+        color: white;
+        box-shadow: 0 5px 15px rgba(244, 67, 54, 0.3);
+    }
+
+    .instructor-details {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+
+    .detail-section {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 20px;
+        padding: 2rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .detail-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .detail-section:hover::before {
+        opacity: 1;
+    }
+
+    .detail-section:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        background: rgba(255, 255, 255, 0.9);
+    }
+
+    .detail-section h6 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .detail-section h6 i {
+        font-size: 1.2rem;
+        color: #667eea;
+    }
+
+    .detail-section p {
+        color: #555;
+        line-height: 1.6;
+        margin-bottom: 0.8rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .detail-section p i {
+        color: #667eea;
+        font-size: 0.9rem;
+        width: 20px;
+    }
+
+    .detail-section a {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .detail-section a:hover {
+        color: #764ba2;
+        text-decoration: underline;
+    }
+
+    .detail-section small {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+        padding: 0.3rem 0.8rem;
+        border-radius: 15px;
+        color: #667eea;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .courses-section {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+        gap: 2rem;
+        margin: 2rem auto;
+        max-width: 1200px;
+    }
+
+    .course-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 25px;
+        padding: 2.5rem;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    .course-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+    }
+
+    .course-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .course-card-header h5 {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #2c3e50;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+
+    .course-card-header i {
+        font-size: 1.8rem;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .course-count {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .course-list {
+        display: grid;
+        gap: 1.5rem;
+    }
+
+    .course-item {
+        background: rgba(255, 255, 255, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 20px;
+        padding: 1.8rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .course-item::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 4px;
+        height: 100%;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .course-item:hover::before {
+        opacity: 1;
+    }
+
+    .course-item:hover {
+        background: rgba(255, 255, 255, 0.9);
+        transform: translateX(5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .course-item-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+    }
+
+    .course-item h6 {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+    }
+
+    .course-item .course-code {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+        padding: 0.3rem 0.8rem;
+        border-radius: 12px;
+        color: #667eea;
+        font-weight: 600;
+        font-size: 0.85rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .role-badge {
+        padding: 0.4rem 1rem;
+        border-radius: 15px;
+        font-weight: 700;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .role-coordinator {
+        background: linear-gradient(135deg, #FF6B6B, #4ECDC4);
+        color: white;
+        box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+    }
+
+    .role-instructor {
+        background: linear-gradient(135deg, #36D1DC, #5B86E5);
+        color: white;
+        box-shadow: 0 4px 12px rgba(54, 209, 220, 0.3);
+    }
+
+    .no-courses {
+        text-align: center;
+        padding: 3rem 2rem;
+        color: #777;
+    }
+
+    .no-courses i {
+        font-size: 3rem;
+        color: #ccc;
+        margin-bottom: 1rem;
+    }
+
+    .no-courses p {
+        font-size: 1.1rem;
+        font-style: italic;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .breadcrumb-container,
+        .instructor-profile,
+        .courses-section .course-card {
+            margin: 1rem;
+            padding: 1.5rem;
+        }
+
+        .instructor-main-info {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            text-align: center;
+        }
+
+        .instructor-details {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .courses-section {
+            grid-template-columns: 1fr;
+            margin: 1rem;
+            gap: 1rem;
+        }
+
+        .instructor-name {
+            font-size: 1.5rem;
+        }
+
+        .profile-header h4 {
+            font-size: 1.5rem;
+        }
+
+        .course-item-header {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: center;
+            text-align: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .breadcrumb {
+            flex-direction: column;
+            gap: 0.5rem;
+            text-align: center;
+        }
+
+        .breadcrumb li:not(:last-child)::after {
+            content: '';
+            margin: 0;
+        }
+
+        .instructor-avatar {
+            width: 100px;
+            height: 100px;
+            font-size: 2.5rem;
+        }
+
+        .detail-section {
+            padding: 1.5rem;
+        }
+
+        .course-card {
+            padding: 2rem;
+        }
+
+        .course-item {
+            padding: 1.5rem;
+        }
+    }
+</style>
+
+<div class="breadcrumb-container">
+    <nav>
+        <ol class="breadcrumb">
+            <li><a href="/">🏠 Inicio</a></li>
+            <li><a href="{% url 'instructores:lista_instructores' %}">👨‍🏫 Lista Instructores</a></li>
+            <li>{{ instructor.nombre_completo }}</li>
+        </ol>
+    </nav>
+</div>
+
+<!-- Información Principal del Instructor -->
+<div class="instructor-profile">
+    <div class="profile-header">
+        <i>👨‍🎓</i>
+        <h4>Perfil del Instructor</h4>
+    </div>
+    <div class="instructor-main-info">
+        <div class="avatar-section">
+            <div class="instructor-avatar">
+                {{ instructor.nombre.0 }}{{ instructor.apellido.0 }}
+            </div>
+            <h4 class="instructor-name">{{ instructor.nombre_completo }}</h4>
+            <div class="status-section">
+                {% if instructor.activo %}
+                <span class="status-badge status-active">
+                    <i>✅</i>Activo
+                </span>
+                {% else %}
+                <span class="status-badge status-inactive">
+                    <i>❌</i>Inactivo
+                </span>
+                {% endif %}
+            </div>
+        </div>
+        <div class="instructor-details">
+            <div class="detail-section">
+                <h6>
+                    <i>🆔</i><strong>Documento de Identidad</strong>
+                </h6>
+                <p><i>📄</i>{{ instructor.get_tipo_documento_display }}</p>
+                <p><i>🔢</i>{{ instructor.documento_identidad }}</p>
+            </div>
+
+            <div class="detail-section">
+                <h6>
+                    <i>🎓</i><strong>Nivel Educativo</strong>
+                </h6>
+                <p><i>📚</i>{{ instructor.get_nivel_educativo_display }}</p>
+                {% if instructor.especialidad %}
+                <small>
+                    <i>⭐</i>{{ instructor.especialidad }}
+                </small>
+                {% endif %}
+            </div>
+
+            <div class="detail-section">
+                <h6>
+                    <i>📞</i><strong>Información de Contacto</strong>
+                </h6>
+                <p>
+                    <i>📧</i>
+                    <a href="mailto:{{ instructor.correo }}">{{ instructor.correo }}</a>
+                </p>
+                {% if instructor.telefono %}
+                <p>
+                    <i>📱</i>
+                    {{ instructor.telefono }}
+                </p>
+                {% endif %}
+            </div>
+
+            <div class="detail-section">
+                <h6>
+                    <i>📍</i><strong>Ubicación</strong>
+                </h6>
+                {% if instructor.ciudad %}
+                <p>
+                    <i>🏙️</i>{{ instructor.ciudad }}
+                </p>
+                {% endif %}
+                {% if instructor.direccion %}
+                <p>
+                    <i>🏠</i>{{ instructor.direccion }}
+                </p>
+                {% endif %}
+            </div>
+
+            <div class="detail-section">
+                <h6>
+                    <i>👤</i><strong>Información Personal</strong>
+                </h6>
+                {% if instructor.fecha_nacimiento %}
+                <p>
+                    <i>🎂</i>
+                    Nacimiento: {{ instructor.fecha_nacimiento|date:"d/m/Y" }}
+                </p>
+                {% endif %}
+                <p>
+                    <i>📅</i>
+                    Registro: {{ instructor.fecha_registro|date:"d/m/Y" }}
+                </p>
+            </div>
+
+            <div class="detail-section">
+                <h6>
+                    <i>💼</i><strong>Experiencia</strong>
+                </h6>
+                <p>
+                    <i>⏰</i>
+                    {{ instructor.anos_experiencia }} años de experiencia
+                </p>
+                {% if instructor.fecha_vinculacion %}
+                <p>
+                    <i>🤝</i>
+                    Vinculación: {{ instructor.fecha_vinculacion|date:"d/m/Y" }}
+                </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="courses-section">
+    <!-- Cursos Coordinados -->
+    <div class="course-card">
+        <div class="course-card-header">
+            <h5>
+                <i>👨‍💼</i>
+                Cursos Coordinados
+            </h5>
+            <span class="course-count">{{ cursos_coordinados|length }} cursos</span>
+        </div>
+        <div class="course-content">
+            {% if cursos_coordinados %}
+            <div class="course-list">
+                {% for curso in cursos_coordinados %}
+                <div class="course-item">
+                    <div class="course-item-header">
+                        <div class="course-info">
+                            <h6>{{ curso.nombre }}</h6>
+                            <p class="course-code">
+                                <i>🔢</i>{{ curso.codigo }}
+                            </p>
+                        </div>
+                        <span class="role-badge role-coordinator">Coordinador</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="no-courses">
+                <i>📚</i>
+                <p>No coordina cursos actualmente</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Cursos Impartidos -->
+    <div class="course-card">
+        <div class="course-card-header">
+            <h5>
+                <i>👨‍🏫</i>
+                Cursos Impartidos
+            </h5>
+            <span class="course-count">{{ cursos_impartidos|length }} cursos</span>
+        </div>
+        <div class="course-content">
+            {% if cursos_impartidos %}
+            <div class="course-list">
+                {% for curso in cursos_impartidos %}
+                <div class="course-item">
+                    <div class="course-item-header">
+                        <div class="course-info">
+                            <h6>{{ curso.nombre }}</h6>
+                            <p class="course-code">
+                                <i>🔢</i>{{ curso.codigo }}
+                            </p>
+                        </div>
+                        <span class="role-badge role-instructor">Instructor</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="no-courses">
+                <i>📖</i>
+                <p>No imparte cursos actualmente</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

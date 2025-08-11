@@ -18,10 +18,10 @@ from django.contrib import admin
 from django.urls import include, path
 
 urlpatterns = [
+    path("admin/", admin.site.urls),
     path('', include('aprendices.urls')),
-    path('', include('instructores.urls')),
-    path('admin/', admin.site.urls),
-    path('', include('programas.urls')),
+    path('instructores', include('instructores.urls')),
+    path('programas', include('programas.urls')),
 ]
 
 admin.site.site_header = "Panel Administrativo SENA"

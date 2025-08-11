@@ -12,3 +12,14 @@ def programas(request):
     'total_programas': lista_programas.count(),
     }
     return HttpResponse(template.render(context, request))
+def detalle_programa(request, programa_id):
+    programa = get_object_or_404(Programa, id=programa_id)
+    cursos = programa.curso_set.all().order_by('-fecha_inicio')
+    template = loader.get_template('detalle_programa.html')
+    
+    context = {
+        'programa': programa,
+        'cursos': cursos,
+    }
+    
+    return HttpResponse(template.render(context, request))
