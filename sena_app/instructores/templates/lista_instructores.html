@@ -434,7 +434,7 @@
             <tbody>
                 {% for instructor in lista_instructores %}
                 <tr>
-                    <td><strong>{{ instructor.documento_identidad }}</strong></td>
+                    <td><strong><a href ="instructor/{{ instructor.id }}">{{ instructor.documento_identidad }}</a>
                     <td>
                         <span class="doc-type-badge">{{ instructor.tipo_documento }}</span>
                     </td>

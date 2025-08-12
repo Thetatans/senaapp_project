@@ -79,7 +79,7 @@
         border-radius: 25px;
         padding: 2rem;
         margin: 2rem auto;
-        max-width: 1400px;
+        max-width: 1600x;
         box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
         border: 1px solid rgba(255, 255, 255, 0.3);
         overflow: hidden;
@@ -135,7 +135,7 @@
 
     tbody tr:hover {
         background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
-        transform: scale(1.100);
+        transform: scale(1.01);
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     }
 
@@ -479,7 +479,7 @@
             <tbody>
                 {% for programa in lista_programas %}
                 <tr>
-                    <td><strong>{{ programa.codigo }}</strong></td>
+                    <td><strong><a href ="programa/{{ programa.id }}">{{ programa.codigo}}</a>
                     <td>{{ programa.nombre }}</td>
                     <td>
                         <span class="nivel-badge">{{ programa.nivel_formacion }}</span>

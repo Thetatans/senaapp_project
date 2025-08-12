@@ -1,228 +1,819 @@
 {% extends 'base.html' %}
 
 {% block title %}Detalles Programa - SENA APP{% endblock %}
-    
+
 {% block content %}
-    <div >
-        <!-- Breadcrumb y Navegación -->
-        <div >
-            <div >
-                <nav >
-                    <ol >
-                        <li ><a href="/" >Inicio</a></li>
-                        <li><a href="{% url 'programas:lista_programas' %}">Lista Programas</a></li>
-                        <li >{{ programa.nombre }}</li>
-                    </ol>
-                </nav>
+<style>
+    .breadcrumb-container {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 20px;
+        padding: 1.5rem 2rem;
+        margin: 1.5rem auto;
+        max-width: 1200px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .breadcrumb {
+        list-style: none;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 1rem;
+        margin: 0;
+        padding: 0;
+        color: white;
+    }
+
+    .breadcrumb li {
+        display: flex;
+        align-items: center;
+        font-size: 0.95rem;
+    }
+
+    .breadcrumb li:not(:last-child)::after {
+        content: '›';
+        margin-left: 1rem;
+        font-size: 1.2rem;
+        opacity: 0.6;
+        font-weight: bold;
+    }
+
+    .breadcrumb a {
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        transition: all 0.3s ease;
+        padding: 0.3rem 0.8rem;
+        border-radius: 15px;
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .breadcrumb a:hover {
+        color: white;
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-1px);
+    }
+
+    .breadcrumb li:last-child {
+        font-weight: 700;
+        color: white;
+    }
+
+    .program-header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 30px;
+        padding: 3rem;
+        margin: 2rem auto;
+        max-width: 1200px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .program-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+    }
+
+    .header-title {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2.5rem;
+        color: #2c3e50;
+    }
+
+    .header-title i {
+        font-size: 2rem;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .header-title h4 {
+        font-size: 2rem;
+        font-weight: 800;
+        margin: 0;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .program-main-info h2 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #2c3e50;
+        margin-bottom: 2rem;
+        text-align: center;
+        line-height: 1.2;
+    }
+
+    .program-details-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+
+    .detail-item {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 20px;
+        padding: 2rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .detail-item::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .detail-item:hover::before {
+        opacity: 1;
+    }
+
+    .detail-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        background: rgba(255, 255, 255, 0.9);
+    }
+
+    .detail-item p {
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        color: #555;
+        font-size: 1rem;
+    }
+
+    .detail-item p i {
+        color: #667eea;
+        font-size: 1.1rem;
+        width: 20px;
+    }
+
+    .detail-item strong {
+        color: #2c3e50;
+        font-weight: 700;
+    }
+
+    .detail-item span {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+        padding: 0.4rem 1rem;
+        border-radius: 15px;
+        color: #667eea;
+        font-weight: 600;
+        margin-left: auto;
+    }
+
+    .detailed-info-section {
+        max-width: 1200px;
+        margin: 2rem auto;
+    }
+
+    .info-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 25px;
+        padding: 2.5rem;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        margin-bottom: 2rem;
+    }
+
+    .info-card-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        color: #2c3e50;
+    }
+
+    .info-card-header i {
+        font-size: 1.5rem;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .info-card-header h5 {
+        font-size: 1.5rem;
+        font-weight: 800;
+        margin: 0;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .duration-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-item {
+        background: rgba(255, 255, 255, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 20px;
+        padding: 2rem;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .stat-item:hover {
+        background: rgba(255, 255, 255, 0.9);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-item h6 {
+        font-size: 1rem;
+        color: #777;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .stat-item h6 i {
+        color: #667eea;
+    }
+
+    .stat-item h4 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-item p {
+        color: #888;
+        font-size: 0.9rem;
+    }
+
+    .dates-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .date-item {
+        background: rgba(255, 255, 255, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 20px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .date-item:hover {
+        background: rgba(255, 255, 255, 0.9);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .date-item h6 {
+        font-size: 1rem;
+        color: #777;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .date-item h6 i {
+        color: #667eea;
+    }
+
+    .date-item p {
+        color: #2c3e50;
+        font-weight: 600;
+        font-size: 1.1rem;
+        margin: 0;
+        font-family: 'Courier New', monospace;
+    }
+
+    .content-section {
+        margin-bottom: 2rem;
+    }
+
+    .content-section h6 {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .content-section h6 i {
+        color: #667eea;
+        font-size: 1.3rem;
+    }
+
+    .content-box {
+        background: rgba(255, 255, 255, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 15px;
+        padding: 2rem;
+        line-height: 1.8;
+        color: #555;
+        font-size: 1rem;
+    }
+
+    .courses-section {
+        max-width: 1200px;
+        margin: 2rem auto;
+    }
+
+    .courses-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 25px;
+        padding: 2.5rem;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .courses-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .courses-title {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        color: #2c3e50;
+    }
+
+    .courses-title i {
+        font-size: 1.8rem;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .courses-title h5 {
+        font-size: 1.5rem;
+        font-weight: 800;
+        margin: 0;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .course-count {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .courses-list {
+        display: grid;
+        gap: 1.5rem;
+    }
+
+    .course-item {
+        background: rgba(255, 255, 255, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 20px;
+        padding: 2rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .course-item::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 4px;
+        height: 100%;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .course-item:hover::before {
+        opacity: 1;
+    }
+
+    .course-item:hover {
+        background: rgba(255, 255, 255, 0.9);
+        transform: translateX(5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .course-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .course-info h6 {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 0.8rem;
+    }
+
+    .course-code {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+        padding: 0.3rem 0.8rem;
+        border-radius: 12px;
+        color: #667eea;
+        font-weight: 600;
+        font-size: 0.85rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .course-description {
+        color: #777;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        margin-bottom: 0;
+    }
+
+    .course-date {
+        background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 152, 0, 0.1));
+        padding: 0.5rem 1rem;
+        border-radius: 15px;
+        color: #FF8F00;
+        font-weight: 600;
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        white-space: nowrap;
+        height: fit-content;
+    }
+
+    .no-courses {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #777;
+    }
+
+    .no-courses i {
+        font-size: 4rem;
+        color: #ddd;
+        margin-bottom: 1.5rem;
+        display: block;
+    }
+
+    .no-courses h5 {
+        font-size: 1.5rem;
+        color: #999;
+        margin-bottom: 1rem;
+        font-weight: 700;
+    }
+
+    .no-courses p {
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+        color: #aaa;
+    }
+
+    .btn-add-course {
+        background: linear-gradient(135deg, #4CAF50, #45a049);
+        color: white;
+        padding: 1rem 2rem;
+        border: none;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-add-course:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 35px rgba(76, 175, 80, 0.4);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .breadcrumb-container,
+        .program-header,
+        .info-card,
+        .courses-card {
+            margin: 1rem;
+            padding: 1.5rem;
+        }
+
+        .program-main-info h2 {
+            font-size: 2rem;
+        }
+
+        .program-details-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .duration-stats,
+        .dates-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .courses-header {
+            flex-direction: column;
+            align-items: stretch;
+            text-align: center;
+        }
+
+        .course-content {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .course-date {
+            align-self: flex-start;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .breadcrumb {
+            flex-direction: column;
+            gap: 0.5rem;
+            text-align: center;
+        }
+
+        .breadcrumb li:not(:last-child)::after {
+            content: '';
+            margin: 0;
+        }
+
+        .header-title h4,
+        .courses-title h5,
+        .info-card-header h5 {
+            font-size: 1.3rem;
+        }
+
+        .program-main-info h2 {
+            font-size: 1.8rem;
+        }
+
+        .stat-item h4 {
+            font-size: 2rem;
+        }
+
+        .detail-item,
+        .stat-item,
+        .date-item,
+        .course-item {
+            padding: 1.5rem;
+        }
+    }
+</style>
+
+<div class="breadcrumb-container">
+    <nav>
+        <ol class="breadcrumb">
+            <li><a href="/">🏠 Inicio</a></li>
+            <li><a href="{% url 'programas:lista_programas' %}">📚 Lista Programas</a></li>
+            <li>{{ programa.nombre }}</li>
+        </ol>
+    </nav>
+</div>
+
+<!-- Información Principal del Programa -->
+<div class="program-header">
+    <div class="header-title">
+        <i>🎓</i>
+        <h4>Información del Programa de Formación</h4>
+    </div>
+    <div class="program-main-info">
+        <h2>{{ programa.nombre }}</h2>
+        <div class="program-details-grid">
+            <div class="detail-item">
+                <p>
+                    <i>🔢</i><strong>Código:</strong>
+                    <span>{{ programa.codigo }}</span>
+                </p>
+            </div>
+            <div class="detail-item">
+                <p>
+                    <i>🏆</i><strong>Nivel:</strong>
+                    <span>{{ programa.get_nivel_formacion_display }}</span>
+                </p>
+            </div>
+            <div class="detail-item">
+                <p>
+                    <i>💻</i><strong>Modalidad:</strong>
+                    <span>{{ programa.get_modalidad_display }}</span>
+                </p>
+            </div>
+            <div class="detail-item">
+                <p>
+                    <i>🏢</i><strong>Centro:</strong>
+                    <span>{{ programa.centro_formacion }}</span>
+                </p>
+            </div>
+            {% if programa.regional %}
+            <div class="detail-item">
+                <p>
+                    <i>🌍</i><strong>Regional:</strong>
+                    <span>{{ programa.regional }}</span>
+                </p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Información Detallada -->
+<div class="detailed-info-section">
+    <div class="info-card">
+        <div class="info-card-header">
+            <i>📊</i>
+            <h5>Detalles del Programa</h5>
+        </div>
+        
+        <!-- Duración -->
+        <div class="duration-stats">
+            <div class="stat-item">
+                <h6>
+                    <i>⏱️</i>Duración del Programa
+                </h6>
+                <h4>{{ programa.duracion_meses }}</h4>
+                <p>meses</p>
+            </div>
+            <div class="stat-item">
+                <h6>
+                    <i>🕒</i>Horas de Formación
+                </h6>
+                <h4>{{ programa.duracion_horas }}</h4>
+                <p>horas</p>
             </div>
         </div>
 
-        <!-- Información Principal del Programa -->
-        <div >
-            <div >
-                <div>
-                    <div>
-                        <i ></i>
-                        <h4 >Información del Programa de Formación</h4>
-                    </div>
-                    <div >
-                        <div >
-                            <div >
-                                <h2 >{{ programa.nombre }}</h2>
-                                <div >
-                                    <div >
-                                        <p>
-                                            <strong><i ></i>Código:</strong>
-                                            <span >{{ programa.codigo }}</span>
-                                        </p>
-                                    </div>
-                                    <div >
-                                        <p>
-                                            <strong><i></i>Nivel:</strong>
-                                            <span >{{ programa.get_nivel_formacion_display }}</span>
-                                        </p>
-                                    </div>
-                                </div>
-                                <div >
-                                    <div >
-                                        <p >
-                                            <strong><i ></i>Modalidad:</strong>
-                                            <span>{{ programa.get_modalidad_display }}</span>
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <p>
-                                            <strong><i ></i>Centro:</strong>
-                                            <span>{{ programa.centro_formacion }}</span>
-                                        </p>
-                                    </div>
-                                </div>
-                                {% if programa.regional %}
-                                <div>
-                                    <div >
-                                        <p>
-                                            <strong><i ></i>Regional:</strong>
-                                            <span>{{ programa.regional }}</span>
-                                        </p>
-                                    </div>
-                                </div>
+        <!-- Fechas -->
+        <div class="dates-grid">
+            <div class="date-item">
+                <h6>
+                    <i>📅</i>Fechas
+                </h6>
+                <p>
+                    <i>🎯</i>
+                    Creación: {{ programa.fecha_creacion|date:"d/m/Y" }}
+                </p>
+                <p>
+                    <i>📋</i>
+                    Registro: {{ programa.fecha_registro|date:"d/m/Y" }}
+                </p>
+            </div>
+        </div>
+
+        <!-- Descripción -->
+        {% if programa.descripcion %}
+        <div class="content-section">
+            <h6>
+                <i>📝</i>Descripción del Programa
+            </h6>
+            <div class="content-box">
+                <p>{{ programa.descripcion }}</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Competencias -->
+        {% if programa.competencias %}
+        <div class="content-section">
+            <h6>
+                <i>🎯</i>Competencias a Desarrollar
+            </h6>
+            <div class="content-box">
+                <p>{{ programa.competencias }}</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Perfil de Egreso -->
+        {% if programa.perfil_egreso %}
+        <div class="content-section">
+            <h6>
+                <i>🚀</i>Perfil de Egreso
+            </h6>
+            <div class="content-box">
+                <p>{{ programa.perfil_egreso }}</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Requisitos de Ingreso -->
+        {% if programa.requisitos_ingreso %}
+        <div class="content-section">
+            <h6>
+                <i>✅</i>Requisitos de Ingreso
+            </h6>
+            <div class="content-box">
+                <p>{{ programa.requisitos_ingreso }}</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Cursos del Programa -->
+<div class="courses-section">
+    <div class="courses-card">
+        <div class="courses-header">
+            <div class="courses-title">
+                <i>📚</i>
+                <h5>Cursos del Programa</h5>
+            </div>
+            <span class="course-count">{{ cursos|length }} cursos</span>
+        </div>
+        <div class="courses-content">
+            {% if cursos %}
+                <div class="courses-list">
+                    {% for curso in cursos %}
+                    <div class="course-item">
+                        <div class="course-content">
+                            <div class="course-info">
+                                <h6>{{ curso.nombre }}</h6>
+                                <p class="course-code">
+                                    <i>🔢</i>{{ curso.codigo }}
+                                </p>
+                                {% if curso.descripcion %}
+                                <p class="course-description">
+                                    {{ curso.descripcion|truncatewords:15 }}
+                                </p>
+                                {% endif %}
+                            </div>
+                            <div class="course-date">
+                                <i>📅</i>
+                                {% if curso.fecha_inicio %}
+                                    {{ curso.fecha_inicio|date:"M Y" }}
+                                {% else %}
+                                    Por definir
                                 {% endif %}
                             </div>
                         </div>
                     </div>
+                    {% endfor %}
                 </div>
-            </div>
-        </div>
-
-        <div >
-            <!-- Información Detallada -->
-            <div >
-                <div >
-                    <div >
-                        <i ></i>
-                        <h5>Detalles del Programa</h5>
-                    </div>
-                    <div>
-                        <!-- Duración -->
-                        <div >
-                            <div >
-                                <div>
-                                    <h6>
-                                        <i ></i>Duración del Programa
-                                    </h6>
-                                    <h4 >{{ programa.duracion_meses }} meses</h4>
-                                    <p >{{ programa.duracion_horas }} horas formación</p>
-                                </div>
-                            </div>
-                            <div>
-                                <div>
-                                    <h6>
-                                        <i ></i>Fechas
-                                    </h6>
-                                    <p >
-                                        <i></i>
-                                        Creación: {{ programa.fecha_creacion|date:"d/m/Y" }}
-                                    </p>
-                                    <p >
-                                        <i></i>
-                                        Registro: {{ programa.fecha_registro|date:"d/m/Y" }}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Descripción -->
-                        {% if programa.descripcion %}
-                        <div>
-                            <h6>
-                                <i></i>Descripción del Programa
-                            </h6>
-                            <div>
-                                <p >{{ programa.descripcion }}</p>
-                            </div>
-                        </div>
-                        {% endif %}
-
-                        <!-- Competencias -->
-                        {% if programa.competencias %}
-                        <div>
-                            <h6>
-                                <i ></i>Competencias a Desarrollar
-                            </h6>
-                            <div >
-                                <p>{{ programa.competencias }}</p>
-                            </div>
-                        </div>
-                        {% endif %}
-
-                        <!-- Perfil de Egreso -->
-                        {% if programa.perfil_egreso %}
-                        <div >
-                            <h6>
-                                <i ></i>Perfil de Egreso
-                            </h6>
-                            <div >
-                                <p>{{ programa.perfil_egreso }}</p>
-                            </div>
-                        </div>
-                        {% endif %}
-
-                        <!-- Requisitos de Ingreso -->
-                        {% if programa.requisitos_ingreso %}
-                        <div >
-                            <h6 >
-                                <i ></i>Requisitos de Ingreso
-                            </h6>
-                            <div>
-                                <p>{{ programa.requisitos_ingreso }}</p>
-                            </div>
-                        </div>
-                        {% endif %}
-                    </div>
+            {% else %}
+                <div class="no-courses">
+                    <i>📚</i>
+                    <h5>No hay cursos registrados</h5>
+                    <p>Este programa aún no tiene cursos asociados</p>
+                    <button class="btn-add-course">
+                        <i>➕</i>Agregar Primer Curso
+                    </button>
                 </div>
-            </div>
+            {% endif %}
         </div>
-
-        <!-- Cursos del Programa -->
-        <div>
-            <div>
-                <div>
-                    <div>
-                        <div>
-                            <i ></i>
-                            <h5>Cursos del Programa</h5>
-                        </div>
-                        <span>{{ cursos|length }} cursos</span>
-                    </div>
-                    <div>
-                        {% if cursos %}
-                            <div >
-                                {% for curso in cursos %}
-                                <div>
-                                    <div>
-                                        <div>
-                                            <div >
-                                                <div>
-                                                    <h6 >{{ curso.nombre }}</h6>
-                                                    <p >
-                                                        <small>
-                                                            <i ></i>{{ curso.codigo }}
-                                                        </small>
-                                                    </p>
-                                                    {% if curso.descripcion %}
-                                                    <p >
-                                                        <small >{{ curso.descripcion|truncatewords:15 }}</small>
-                                                    </p>
-                                                    {% endif %}
-                                                </div>
-                                            </div>
-                                            <div >
-                                                <small>
-                                                    <i ></i>
-                                                    {% if curso.fecha_inicio %}
-                                                        {{ curso.fecha_inicio|date:"M Y" }}
-                                                    {% else %}
-                                                        Por definir
-                                                    {% endif %}
-                                                </small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {% endfor %}
-                            </div>
-                        {% else %}
-                            <div >
-                                <i ></i>
-                                <h5 >No hay cursos registrados</h5>
-                                <p >Este programa aún no tiene cursos asociados</p>
-                                <button >
-                                    <i ></i>Agregar Primer Curso
-                                </button>
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-    {% endblock %}
+    </div>
+</div>
+{% endblock %}
