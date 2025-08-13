@@ -1,0 +1,508 @@
+{% extends 'base.html' %}
+
+{% block title %}Agregar Instructor - SENA APP{% endblock %}
+
+{% block content %}
+<style>
+    .breadcrumb-container {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 20px;
+        padding: 1.5rem 2rem;
+        margin: 1.5rem auto;
+        max-width: 1200px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .breadcrumb {
+        list-style: none;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 1rem;
+        margin: 0;
+        padding: 0;
+        color: white;
+    }
+
+    .breadcrumb li {
+        display: flex;
+        align-items: center;
+        font-size: 0.95rem;
+    }
+
+    .breadcrumb li:not(:last-child)::after {
+        content: '›';
+        margin-left: 1rem;
+        font-size: 1.2rem;
+        opacity: 0.6;
+        font-weight: bold;
+    }
+
+    .breadcrumb a {
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        transition: all 0.3s ease;
+        padding: 0.3rem 0.8rem;
+        border-radius: 15px;
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .breadcrumb a:hover {
+        color: white;
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-1px);
+    }
+
+    .breadcrumb li:last-child {
+        font-weight: 700;
+        color: white;
+    }
+
+    .form-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+    }
+
+    .form-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 30px;
+        padding: 3rem;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .form-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+    }
+
+    .form-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2.5rem;
+        color: #2c3e50;
+    }
+
+    .form-header i {
+        font-size: 2rem;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .form-header h3 {
+        font-size: 2rem;
+        font-weight: 800;
+        margin: 0;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .form-grid-3 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .form-group {
+        position: relative;
+    }
+
+    .form-group.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 0.8rem;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-group label span {
+        color: #e74c3c;
+        font-weight: 800;
+    }
+
+    .form-control,
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="date"],
+    input[type="number"],
+    select,
+    textarea {
+        width: 100%;
+        padding: 1rem 1.5rem;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 15px;
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        font-size: 1rem;
+        color: #2c3e50;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        box-sizing: border-box;
+    }
+
+    .form-control:focus,
+    input:focus,
+    select:focus,
+    textarea:focus {
+        outline: none;
+        border-color: #667eea;
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+        transform: translateY(-1px);
+    }
+
+    .form-control::placeholder {
+        color: #999;
+        opacity: 0.8;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 3rem;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        padding: 1rem 2.5rem;
+        border: none;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.8rem;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn i {
+        font-size: 1.1rem;
+    }
+
+    .btn-cancel {
+        background: rgba(255, 255, 255, 0.8);
+        color: #666;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(10px);
+    }
+
+    .btn-cancel:hover {
+        background: rgba(255, 255, 255, 0.95);
+        color: #444;
+        transform: translateY(-2px);
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        filter: brightness(1.1);
+    }
+
+    .form-note {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 20px;
+        padding: 1.5rem 2rem;
+        margin-top: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        color: #666;
+        font-size: 0.95rem;
+    }
+
+    .form-note i {
+        color: #667eea;
+        font-size: 1.2rem;
+    }
+
+    .form-note span {
+        color: #e74c3c;
+        font-weight: 700;
+    }
+
+    /* Error styles */
+    .form-group.has-error .form-control {
+        border-color: #e74c3c;
+        background: rgba(231, 76, 60, 0.05);
+    }
+
+    .error-message {
+        color: #e74c3c;
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .error-message i {
+        font-size: 0.9rem;
+    }
+
+    /* Success styles */
+    .form-group.has-success .form-control {
+        border-color: #27ae60;
+        background: rgba(39, 174, 96, 0.05);
+    }
+
+    /* Input focus animations */
+    .form-group {
+        position: relative;
+    }
+
+    .form-group::before {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 50%;
+        width: 0;
+        height: 2px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        transform: translateX(-50%);
+        transition: width 0.3s ease;
+        border-radius: 2px;
+        z-index: 1;
+    }
+
+    .form-group:focus-within::before {
+        width: 100%;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .breadcrumb-container,
+        .form-card {
+            margin: 1rem;
+            padding: 2rem 1.5rem;
+        }
+
+        .form-grid,
+        .form-grid-3 {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .form-actions {
+            flex-direction: column-reverse;
+            align-items: stretch;
+        }
+
+        .btn {
+            width: 100%;
+            justify-content: center;
+            padding: 1.2rem 2rem;
+        }
+
+        .form-header h3 {
+            font-size: 1.5rem;
+        }
+
+        .form-header i {
+            font-size: 1.5rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .breadcrumb {
+            flex-direction: column;
+            gap: 0.5rem;
+            text-align: center;
+        }
+
+        .breadcrumb li:not(:last-child)::after {
+            content: '';
+            margin: 0;
+        }
+
+        .form-card {
+            padding: 1.5rem 1rem;
+        }
+
+        .form-header h3 {
+            font-size: 1.3rem;
+        }
+
+        .form-control {
+            padding: 0.8rem 1.2rem;
+        }
+    }
+</style>
+
+<div class="breadcrumb-container">
+    <nav>
+        <ol class="breadcrumb">
+            <li><a href="/">🏠 Inicio</a></li>
+            <li><a href="{% url 'instructores:lista_instructores' %}">👨‍🏫 Lista Instructores</a></li>
+            <li>Agregar Instructor</li>
+        </ol>
+    </nav>
+</div>
+
+<div class="form-container">
+    <div class="form-card">
+        <div class="form-header">
+            <i>👨‍🏫</i>
+            <h3>Agregar Instructor</h3>
+        </div>
+        
+        <form method="post" novalidate>
+            {% csrf_token %}
+            
+            <!-- Información de Identidad -->
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>{{ form.tipo_documento.label }}</label>
+                    {{ form.tipo_documento }}
+                </div>
+                
+                <div class="form-group">
+                    <label>{{ form.documento_identidad.label }} <span>*</span></label>
+                    {{ form.documento_identidad }}
+                </div>
+            </div>
+
+            <!-- Información Personal -->
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>{{ form.nombre.label }} <span>*</span></label>
+                    {{ form.nombre }}
+                </div>
+                
+                <div class="form-group">
+                    <label>{{ form.apellido.label }} <span>*</span></label>
+                    {{ form.apellido }}
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>{{ form.telefono.label }}</label>
+                    {{ form.telefono }}
+                </div>
+                
+                <div class="form-group">
+                    <label>{{ form.correo.label }}</label>
+                    {{ form.correo }}
+                </div>
+            </div>
+
+            <!-- Información de Ubicación -->
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>{{ form.ciudad.label }}</label>
+                    {{ form.ciudad }}
+                </div>
+                
+                <div class="form-group">
+                    <label>{{ form.direccion.label }} <span>*</span></label>
+                    {{ form.direccion }}
+                </div>
+            </div>
+
+            <!-- Información Académica y Profesional -->
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>{{ form.nivel_educativo.label }}</label>
+                    {{ form.nivel_educativo }}
+                </div>
+                
+                <div class="form-group">
+                    <label>{{ form.especialidad.label }} <span>*</span></label>
+                    {{ form.especialidad }}
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>{{ form.anos_experiencia.label }}</label>
+                    {{ form.anos_experiencia }}
+                </div>
+                
+                <div class="form-group">
+                    <label>{{ form.activo.label }} <span>*</span></label>
+                    {{ form.activo }}
+                </div>
+            </div>
+
+            <!-- Fechas -->
+            <div class="form-grid-3">
+                <div class="form-group">
+                    <label>{{ form.fecha_nacimiento.label }} <span>*</span></label>
+                    {{ form.fecha_nacimiento }}
+                </div>
+                
+                <div class="form-group">
+                    <label>{{ form.fecha_vinculacion.label }}</label>
+                    {{ form.fecha_vinculacion }}
+                </div>
+                
+                <div class="form-group">
+                    <label>{{ form.fecha_registro.label }}</label>
+                    {{ form.fecha_registro }}
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <a href="{% url 'instructores:lista_instructores' %}" class="btn btn-cancel">
+                    <i>❌</i> Cancelar
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i>💾</i> Guardar Instructor
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    <div class="form-note">
+        <i>ℹ️</i>
+        <small>
+            Los campos marcados con <span>*</span> son obligatorios.
+        </small>
+    </div>
+</div>
+{% endblock %}

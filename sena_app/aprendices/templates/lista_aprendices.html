@@ -193,13 +193,14 @@
     .btn-edit {
         background: linear-gradient(135deg, #FFA726, #FF7043);
         color: white;
-        padding: 0.6rem 1.2rem;
+        padding: 0.6rem 1rem;
         border-radius: 20px;
         text-decoration: none;
         font-weight: 600;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         transition: all 0.3s ease;
         box-shadow: 0 4px 12px rgba(255, 167, 38, 0.3);
+        white-space: nowrap;
     }
 
     .btn-edit:hover {
@@ -342,7 +343,7 @@
     <h2>Lista de Aprendices SENA</h2>
     <div class="header-controls">
         <span class="total-count">📊 Total: {{ total_aprendices }} aprendices</span>
-        <a href="{% url 'admin:aprendices_aprendiz_add' %}" class="btn-add">
+        <a href="{% url 'aprendices:crear_aprendiz' %}" class="btn-add">
             Nuevo Aprendiz
         </a>
     </div>
