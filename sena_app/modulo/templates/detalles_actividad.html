@@ -1,0 +1,696 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    /* Breadcrumb Styling */
+    .breadcrumb-container {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 20px;
+        padding: 1.5rem 2rem;
+        margin: 2rem auto;
+        max-width: 1400px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        font-size: 1rem;
+        font-weight: 500;
+    }
+
+    .breadcrumb li {
+        display: flex;
+        align-items: center;
+    }
+
+    .breadcrumb li::after {
+        content: '→';
+        margin-left: 1rem;
+        margin-right: 1rem;
+        color: rgba(255, 255, 255, 0.6);
+        font-weight: bold;
+    }
+
+    .breadcrumb li:last-child::after {
+        display: none;
+    }
+
+    .breadcrumb a {
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        padding: 0.5rem 1rem;
+        border-radius: 15px;
+        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+    }
+
+    .breadcrumb a:hover {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .breadcrumb li:last-child {
+        color: white;
+        font-weight: 600;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        padding: 0.5rem 1rem;
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    /* Main Activity Container */
+    .activity-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    /* Activity Info Card */
+    .activity-info-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 25px;
+        padding: 0;
+        margin: 2rem auto;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        overflow: hidden;
+    }
+
+    /* Activity Header */
+    .activity-header {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 2.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .activity-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+        opacity: 0.3;
+    }
+
+    .header-icon {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .header-icon i {
+        font-size: 2rem;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 1rem;
+        border-radius: 50%;
+        backdrop-filter: blur(10px);
+    }
+
+    .header-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    /* Activity Content */
+    .activity-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .activity-main-info {
+        background: white;
+        padding: 2.5rem;
+    }
+
+    .activity-name {
+        font-size: 2.2rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .activity-details-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .detail-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: rgba(102, 126, 234, 0.05);
+        border-radius: 15px;
+        border-left: 4px solid #667eea;
+        transition: all 0.3s ease;
+    }
+
+    .detail-item:hover {
+        background: rgba(102, 126, 234, 0.1);
+        transform: translateX(5px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.1);
+    }
+
+    .detail-item i {
+        color: #667eea;
+        font-size: 1.2rem;
+        width: 20px;
+        text-align: center;
+    }
+
+    .detail-item strong {
+        color: #2c3e50;
+        font-weight: 600;
+        min-width: 100px;
+    }
+
+    /* Categoria specific badges */
+    .categoria-badge {
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: inline-block;
+        text-transform: uppercase;
+    }
+
+    .categoria-badge.DEP { background: linear-gradient(135deg, #FF6B6B, #FF5722); box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3); }
+    .categoria-badge.CUL { background: linear-gradient(135deg, #9C27B0, #673AB7); box-shadow: 0 4px 12px rgba(156, 39, 176, 0.3); }
+    .categoria-badge.TEC { background: linear-gradient(135deg, #2196F3, #1976D2); box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3); }
+    .categoria-badge.ART { background: linear-gradient(135deg, #E91E63, #C2185B); box-shadow: 0 4px 12px rgba(233, 30, 99, 0.3); }
+    .categoria-badge.AMB { background: linear-gradient(135deg, #4CAF50, #388E3C); box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3); }
+    .categoria-badge.SOC { background: linear-gradient(135deg, #FF9800, #F57C00); box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3); }
+    .categoria-badge.LID { background: linear-gradient(135deg, #795548, #5D4037); box-shadow: 0 4px 12px rgba(121, 85, 72, 0.3); }
+    .categoria-badge.EMP { background: linear-gradient(135deg, #607D8B, #455A64); box-shadow: 0 4px 12px rgba(96, 125, 139, 0.3); }
+    .categoria-badge.VOL { background: linear-gradient(135deg, #00BCD4, #00ACC1); box-shadow: 0 4px 12px rgba(0, 188, 212, 0.3); }
+    .categoria-badge.CIE { background: linear-gradient(135deg, #8BC34A, #689F38); box-shadow: 0 4px 12px rgba(139, 195, 74, 0.3); }
+
+    /* Estado specific badges */
+    .estado-badge {
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: inline-block;
+        text-transform: uppercase;
+    }
+
+    .estado-badge.PLA { background: linear-gradient(135deg, #2196F3, #1976D2); box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3); }
+    .estado-badge.ACT { background: linear-gradient(135deg, #4CAF50, #45a049); box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3); }
+    .estado-badge.SUS { background: linear-gradient(135deg, #FF9800, #F57C00); box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3); }
+    .estado-badge.FIN { background: linear-gradient(135deg, #9C27B0, #7B1FA2); box-shadow: 0 4px 12px rgba(156, 39, 176, 0.3); }
+    .estado-badge.CAN { background: linear-gradient(135deg, #f44336, #d32f2f); box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3); }
+
+    .regional-badge {
+        background: linear-gradient(135deg, #8BC34A, #4CAF50);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        box-shadow: 0 4px 12px rgba(139, 195, 74, 0.3);
+        display: inline-block;
+    }
+
+    .centro-badge {
+        background: linear-gradient(135deg, #00BCD4, #009688);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        box-shadow: 0 4px 12px rgba(0, 188, 212, 0.3);
+        display: inline-block;
+    }
+
+    .duracion-badge {
+        background: linear-gradient(135deg, #FF5722, #E64A19);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        box-shadow: 0 4px 12px rgba(255, 87, 34, 0.3);
+        display: inline-block;
+    }
+
+    .descripcion-section {
+        background: rgba(255, 193, 7, 0.1);
+        border: 1px solid rgba(255, 193, 7, 0.3);
+        border-radius: 15px;
+        padding: 2rem;
+        margin-top: 2rem;
+    }
+
+    .descripcion-section h6 {
+        color: #F57C00;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1.2rem;
+    }
+
+    .descripcion-section i {
+        color: #F57C00;
+    }
+
+    .descripcion-content {
+        color: #2c3e50;
+        font-size: 1rem;
+        line-height: 1.6;
+        text-align: justify;
+    }
+
+    /* Timeline Card */
+    .timeline-card {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+        border: 1px solid rgba(102, 126, 234, 0.2);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-top: 2rem;
+    }
+
+    .timeline-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .timeline-header i {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 1rem;
+        border-radius: 50%;
+        font-size: 1.5rem;
+    }
+
+    .timeline-header h5 {
+        margin: 0;
+        color: #2c3e50;
+        font-weight: 700;
+        font-size: 1.3rem;
+    }
+
+    .timeline-item {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+        padding: 1.2rem;
+        background: rgba(255, 255, 255, 0.7);
+        border-radius: 15px;
+        transition: all 0.3s ease;
+    }
+
+    .timeline-item:hover {
+        background: rgba(255, 255, 255, 0.9);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .timeline-icon {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 1rem;
+        border-radius: 50%;
+        font-size: 1.2rem;
+        min-width: 50px;
+        text-align: center;
+    }
+
+    .timeline-content h6 {
+        margin: 0 0 0.5rem 0;
+        color: #2c3e50;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    .timeline-content p {
+        margin: 0;
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    /* Status Info Card */
+    .status-info-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 25px;
+        padding: 2rem;
+        margin-top: 2rem;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        text-align: center;
+    }
+
+    .status-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.5rem 2rem;
+        border-radius: 25px;
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .status-indicator.activa {
+        background: linear-gradient(135deg, #4CAF50, #45a049);
+        color: white;
+        box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
+    }
+
+    .status-indicator.inactiva {
+        background: linear-gradient(135deg, #f44336, #d32f2f);
+        color: white;
+        box-shadow: 0 8px 25px rgba(244, 67, 54, 0.3);
+    }
+
+    .status-indicator i {
+        font-size: 1.5rem;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-edit {
+        background: linear-gradient(135deg, #FFA726, #FF7043);
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 25px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 6px 18px rgba(255, 167, 38, 0.3);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-edit:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(255, 167, 38, 0.4);
+        color: white;
+        text-decoration: none;
+    }
+
+    .btn-back {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 25px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 6px 18px rgba(102, 126, 234, 0.3);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-back:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        color: white;
+        text-decoration: none;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .breadcrumb-container {
+            margin: 1rem;
+            padding: 1rem 1.5rem;
+        }
+
+        .breadcrumb {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .breadcrumb li::after {
+            display: none;
+        }
+
+        .activity-container {
+            padding: 0;
+        }
+
+        .activity-info-card {
+            margin: 1rem;
+        }
+
+        .activity-header {
+            padding: 2rem 1.5rem;
+        }
+
+        .activity-main-info {
+            padding: 1.5rem;
+        }
+
+        .activity-name {
+            font-size: 1.8rem;
+        }
+
+        .activity-details-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .timeline-card {
+            margin: 1rem;
+            padding: 1.5rem;
+        }
+
+        .status-info-card {
+            margin: 1rem;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .btn-edit, .btn-back {
+            width: 100%;
+            max-width: 300px;
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .activity-header {
+            padding: 1.5rem 1rem;
+        }
+
+        .activity-main-info {
+            padding: 1rem;
+        }
+
+        .activity-name {
+            font-size: 1.5rem;
+        }
+
+        .header-title {
+            font-size: 1.4rem;
+        }
+
+        .detail-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .timeline-item {
+            flex-direction: column;
+            text-align: center;
+            gap: 1rem;
+        }
+
+        .timeline-icon {
+            align-self: center;
+        }
+    }
+</style>
+
+<div class="activity-container">
+    <!-- Breadcrumb y Navegación -->
+    <div class="breadcrumb-container">
+        <nav>
+            <ol class="breadcrumb">
+                <li><a href="/">🏠 Inicio</a></li>
+                <li><a href="{% url 'actividades:lista_actividades' %}">🎯 Lista Actividades</a></li>
+                <li>📋 Detalles de Actividad</li>
+            </ol>
+        </nav>
+    </div>
+
+    <!-- Información Básica de la Actividad -->
+    <div class="activity-info-card">
+        <div class="activity-header">
+            <div class="header-icon">
+                <i class="fas fa-bullseye"></i>
+                <h4 class="header-title">🎯 Información de la Actividad</h4>
+            </div>
+        </div>
+        
+        <div class="activity-main-info">
+            <h2 class="activity-name">{{ actividad.nombre }}</h2>
+            
+            <div class="activity-details-grid">
+                <div class="detail-item">
+                    <i class="fas fa-folder"></i>
+                    <div>
+                        <strong>📂 Categoría:</strong>
+                        <span class="categoria-badge {{ actividad.categoria }}">
+                            {{ actividad.get_categoria_display }}
+                        </span>
+                    </div>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-flag"></i>
+                    <div>
+                        <strong>📊 Estado:</strong>
+                        <span class="estado-badge {{ actividad.estado }}">
+                            {{ actividad.get_estado_display }}
+                        </span>
+                    </div>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-building"></i>
+                    <div>
+                        <strong>🏢 Centro:</strong>
+                        <span class="centro-badge">{{ actividad.centro_formacion }}</span>
+                    </div>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <div>
+                        <strong>🌍 Regional:</strong>
+                        <span class="regional-badge">{{ actividad.regional }}</span>
+                    </div>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-clock"></i>
+                    <div>
+                        <strong>⏱️ Duración:</strong>
+                        <span class="duracion-badge">{{ actividad.duracion_dias }} días</span>
+                    </div>
+                </div>
+            </div>
+
+            {% if actividad.descripcion %}
+            <div class="descripcion-section">
+                <h6><i class="fas fa-align-left"></i>📝 Descripción de la Actividad:</h6>
+                <div class="descripcion-content">{{ actividad.descripcion }}</div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Timeline de la Actividad -->
+        <div class="timeline-card">
+            <div class="timeline-header">
+                <i class="fas fa-calendar-alt"></i>
+                <h5>📅 Cronograma de la Actividad</h5>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-icon">
+                    <i class="fas fa-play"></i>
+                </div>
+                <div class="timeline-content">
+                    <h6>🚀 Fecha de Inicio</h6>
+                    <p>{{ actividad.fecha_inicio|date:"l, d \d\e F \d\e Y" }}</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-icon">
+                    <i class="fas fa-stop"></i>
+                </div>
+                <div class="timeline-content">
+                    <h6>🏁 Fecha de Finalización</h6>
+                    <p>{{ actividad.fecha_fin|date:"l, d \d\e F \d\e Y" }}</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-icon">
+                    <i class="fas fa-hourglass-half"></i>
+                </div>
+                <div class="timeline-content">
+                    <h6>⏳ Duración Total</h6>
+                    <p>{{ actividad.duracion_dias }} días de duración</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estado de la Actividad -->
+    <div class="status-info-card">
+        {% if actividad.is_activa %}
+        <div class="status-indicator activa">
+            <i class="fas fa-check-circle"></i>
+            <span>✅ Actividad Activa</span>
+        </div>
+        <p>Esta actividad se encuentra actualmente en estado activo y en pleno desarrollo.</p>
+        {% else %}
+        <div class="status-indicator inactiva">
+            <i class="fas fa-pause-circle"></i>
+            <span>⏸️ Actividad Inactiva</span>
+        </div>
+        <p>Esta actividad no se encuentra en estado activo. Estado actual: <strong>{{ actividad.get_estado_display }}</strong></p>
+        {% endif %}
+
+        <!-- Botones de Acción -->
+        <div class="action-buttons">
+            <a href="{% url 'actividades:lista_actividades' %}" class="btn-back">
+                <i class="fas fa-arrow-left"></i>
+                ← Volver a Lista
+            </a>
+            <a href="{% url 'admin:actividades_actividad_change' actividad.pk %}" class="btn-edit">
+                <i class="fas fa-edit"></i>
+                ✏️ Editar Actividad
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

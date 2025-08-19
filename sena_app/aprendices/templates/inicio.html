@@ -272,6 +272,9 @@
         <a href="{% url 'aprendices:lista_cursos' %}" class="btn-secondary">
                 Ver Cursos
         </a>
+         <a href="{% url 'actividades:lista_actividades' %}" class="btn-secondary">
+            Ver Actividades
+        </a>
     </div>
 </div>
 
@@ -296,6 +299,16 @@
                 <h5>Lista de Programas</h5>
                 <p>Consulta todos los programas registrados en el sistema</p>
                 <a href="{% url 'programas:lista_programas' %}" class="feature-btn">Ver Lista</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="features-section">
+        <div class="features-grid">
+            <div class="feature-card">
+                <h5>Lista de actividades</h5>
+                <p>consulta todas las actividades registradas en el sistema</p>
+                <a href="{% url 'actividades:lista_actividades' %}" class="feature-btn">Ver Lista</a>
             </div>
         </div>
     </div>
