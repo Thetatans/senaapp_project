@@ -144,12 +144,14 @@
     }
 
     td {
-        padding: 1.2rem 1rem;
+       
+        padding: 1.8rem 1rem;
         vertical-align: middle;
         font-size: 0.9rem;
         position: relative;
         max-width: 200px;
         word-wrap: break-word;
+       
     }
 
     td strong {
@@ -308,15 +310,19 @@
     }
 
     .btn-edit {
+        display: flex;
         background: linear-gradient(135deg, #FFA726, #FF7043);
         color: white;
-        padding: 0.6rem 1.2rem;
+        padding: 0.6rem 0.9rem;
         border-radius: 20px;
         text-decoration: none;
         font-weight: 600;
         font-size: 0.9rem;
         transition: all 0.3s ease;
         box-shadow: 0 4px 12px rgba(255, 167, 38, 0.3);
+         flex-box:column;
+        
+     
     }
 
     .btn-edit:hover {
@@ -327,9 +333,10 @@
     }
 
     .btn-view {
+        display: flex;
         background: linear-gradient(135deg, #2196F3, #1976D2);
         color: white;
-        padding: 0.6rem 1.2rem;
+        padding: 0.6rem 1rem;
         border-radius: 20px;
         text-decoration: none;
         font-weight: 600;
@@ -337,6 +344,8 @@
         transition: all 0.3s ease;
         box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
         margin-right: 0.5rem;
+        flex-box:column;
+   
     }
 
     .btn-view:hover {
@@ -383,7 +392,7 @@
     .btn-first {
         background: linear-gradient(135deg, #667eea, #764ba2);
         color: white;
-        padding: 1.2rem 2.5rem;
+        padding: 1.2rem 1.5rem;
         border-radius: 50px;
         text-decoration: none;
         font-weight: 700;
@@ -505,7 +514,12 @@
 
 <div class="page-header">
     <h2>🎯 Lista de Actividades Extracurriculares SENA</h2>
-    
+    <div class="header-controls">
+        <span class="total-count">📊 Total: {{ total_actividades }} Actividades</span>
+        <a href="{% url 'actividades:crear_actividad' %}" class="btn-add">
+            Nueva Actividad
+        </a>
+    </div>
 </div>
 
 {% if lista_actividades %}
@@ -561,9 +575,11 @@
                         </span>
                     </td>
                     <td>
-                        <a href="" class="btn-view" target="_blank">
+                        <a href="{% url 'actividades:detalles_actividad' actividad.id %}" class="btn-view">
                             👁️ Ver
                         </a>
+                        <br>
+                        
                         <a href="{% url 'admin:modulo_actividad_change' actividad.pk %}" class="btn-edit">
                             ✏️ Editar
                         </a>
@@ -580,7 +596,7 @@
     <p>Aún no se han registrado Actividades Extracurriculares en el sistema. ¡Comienza agregando la primera actividad!</p>
     <hr>
     <p>
-        <a href="{% url 'admin:modulo_actividad_add' %}" class="btn-first">
+        <a href="{% url 'actividades:crear_actividad' %}" class="btn-first">
             🚀 Registrar Primera Actividad
         </a>
     </p>

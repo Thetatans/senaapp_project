@@ -500,7 +500,7 @@
                         <span class="regional-badge">{{ programa.regional }}</span>
                     </td>
                     <td>
-                        <a href="{% url 'admin:programas_programa_change' programa.pk %}" class="btn-edit">
+                        <a href="{% url 'admin:programas_programa_change' programa.id %}" class="btn-edit">
                             ✏️ Editar
                         </a>
                     </td>
@@ -509,6 +509,7 @@
             </tbody>
         </table>
     </div>
+    
 </div>
 {% else %}
 <div class="empty-state">
@@ -516,7 +517,7 @@
     <p>Aún no se han registrado Programas en el sistema. ¡Comienza agregando el primer programa!</p>
     <hr>
     <p>
-        <a href="{% url 'admin:programas_programa_add' %}" class="btn-first">
+        <a href="{% url 'programas:crear_programa' %}" class="btn-first">
             🚀 Registrar Primer Programa
         </a>
     </p>
