@@ -54,3 +54,25 @@ class ActividadFormView(FormView):
             'Por favor, corrija los errores en el formulario.'
         )
     
+# Vista para eliminar actividad - CORREGIDA
+class ActividadDeleteView(generic.DeleteView):
+    model = Actividad
+    template_name = 'confirmar_eliminacion_actividad.html'  # Template de confirmación
+    success_url = "/modulolista_actividades/"
+    context_object_name = 'actividad'
+    
+    def delete(self, request, *args, **kwargs):
+        # Obtener el objeto antes de eliminarlo para mostrar el mensaje
+        self.object = self.get_object()
+        nombre_actividad = self.object.nombre
+        
+        # Llamar al método delete del padre
+        response = super().delete(request, *args, **kwargs)
+        
+        # Agregar mensaje de éxito
+        messages.success(
+            self.request,
+            f'La actividad "{nombre_actividad}" ha sido eliminada exitosamente.'
+        )
+        
+        return response

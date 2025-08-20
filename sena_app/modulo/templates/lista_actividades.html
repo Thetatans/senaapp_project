@@ -332,6 +332,35 @@
         text-decoration: none;
     }
 
+
+
+
+        .btn-delete {
+        display: flex;
+        background: linear-gradient(135deg, #ff2626ff, #ff4343ff);
+        color: white;
+        padding: 0.6rem 1.2rem;
+        border-radius: 20px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(255, 38, 38, 0.3);
+         flex-box:column;
+        
+     
+    }
+
+    .btn-delete:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(255, 38, 38, 0.4);
+        color: white;
+        text-decoration: none;
+    }
+
+
+    
+
     .btn-view {
         display: flex;
         background: linear-gradient(135deg, #2196F3, #1976D2);
@@ -582,6 +611,11 @@
                         
                         <a href="{% url 'admin:modulo_actividad_change' actividad.pk %}" class="btn-edit">
                             ✏️ Editar
+                        </a>
+
+                        <br>
+                         <a href="{% url 'actividades:eliminar_actividad' actividad.pk %}" class="btn-delete">
+                         Eliminar
                         </a>
                     </td>
                 </tr>

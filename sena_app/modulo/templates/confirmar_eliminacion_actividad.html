@@ -1,0 +1,455 @@
+
+{% extends "base.html" %}
+
+{% block title %}Eliminar Actividad - SENA APP{% endblock %}
+
+{% block content %}
+<style>
+    .page-header {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 25px;
+        padding: 2.5rem;
+        margin: 2rem auto;
+        max-width: 1000px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .page-header h2 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #ff2626ff, #ff4343ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+
+    .confirmation-container {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 25px;
+        padding: 3rem;
+        margin: 2rem auto;
+        max-width: 1000px;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .alert-warning {
+        background: linear-gradient(135deg, rgba(255, 193, 7, 0.15), rgba(255, 152, 0, 0.15));
+        border: 2px solid rgba(255, 193, 7, 0.3);
+        border-radius: 20px;
+        padding: 2rem;
+        margin: 2rem 0;
+        color: #856404;
+        font-size: 1.1rem;
+        line-height: 1.6;
+        backdrop-filter: blur(10px);
+    }
+
+    .alert-warning strong {
+        color: #856404;
+        font-weight: 800;
+        font-size: 1.3rem;
+        display: block;
+        margin-bottom: 1rem;
+    }
+
+    .actividad-info {
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(15px);
+        border-radius: 20px;
+        padding: 2rem;
+        margin: 2rem 0;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin: 1.5rem 0;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.7);
+        border-radius: 15px;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+    }
+
+    .info-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .info-label {
+        font-weight: 700;
+        color: #2c3e50;
+        min-width: 80px;
+        margin-right: 1rem;
+        font-size: 0.9rem;
+    }
+
+    .info-value {
+        font-weight: 600;
+        color: #34495e;
+        flex: 1;
+    }
+
+    .categoria-badge {
+        color: white;
+        padding: 0.4rem 0.8rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: inline-block;
+        text-transform: uppercase;
+    }
+
+    /* Colores específicos por categoría */
+    .categoria-badge.DEP { background: linear-gradient(135deg, #FF6B6B, #FF5722); }
+    .categoria-badge.CUL { background: linear-gradient(135deg, #9C27B0, #673AB7); }
+    .categoria-badge.TEC { background: linear-gradient(135deg, #2196F3, #1976D2); }
+    .categoria-badge.ART { background: linear-gradient(135deg, #E91E63, #C2185B); }
+    .categoria-badge.AMB { background: linear-gradient(135deg, #4CAF50, #388E3C); }
+    .categoria-badge.SOC { background: linear-gradient(135deg, #FF9800, #F57C00); }
+    .categoria-badge.LID { background: linear-gradient(135deg, #795548, #5D4037); }
+    .categoria-badge.EMP { background: linear-gradient(135deg, #607D8B, #455A64); }
+    .categoria-badge.VOL { background: linear-gradient(135deg, #00BCD4, #00ACC1); }
+    .categoria-badge.CIE { background: linear-gradient(135deg, #8BC34A, #689F38); }
+
+    .estado-badge {
+        color: white;
+        padding: 0.4rem 0.8rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: inline-block;
+        text-transform: uppercase;
+    }
+
+    /* Colores específicos por estado */
+    .estado-badge.PLA { background: linear-gradient(135deg, #2196F3, #1976D2); }
+    .estado-badge.ACT { background: linear-gradient(135deg, #4CAF50, #45a049); }
+    .estado-badge.SUS { background: linear-gradient(135deg, #FF9800, #F57C00); }
+    .estado-badge.FIN { background: linear-gradient(135deg, #9C27B0, #7B1FA2); }
+    .estado-badge.CAN { background: linear-gradient(135deg, #f44336, #d32f2f); }
+
+    .fecha-badge {
+        background: linear-gradient(135deg, #9C27B0, #673AB7);
+        color: white;
+        padding: 0.4rem 0.8rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+    .regional-badge {
+        background: linear-gradient(135deg, #8BC34A, #4CAF50);
+        color: white;
+        padding: 0.4rem 0.8rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+    .centro-badge {
+        background: linear-gradient(135deg, #00BCD4, #009688);
+        color: white;
+        padding: 0.4rem 0.8rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+    .duracion-badge {
+        background: linear-gradient(135deg, #FF5722, #E64A19);
+        color: white;
+        padding: 0.4rem 0.8rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+    .descripcion-box {
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .descripcion-box .info-label {
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .descripcion-box .info-value {
+        color: #555;
+        line-height: 1.6;
+        text-align: justify;
+    }
+
+    .actions-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 2rem;
+        margin-top: 3rem;
+        padding: 2rem;
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .btn-cancel {
+        background: linear-gradient(135deg, #6c757d, #495057);
+        color: white;
+        padding: 1.2rem 2.5rem;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 25px rgba(108, 117, 125, 0.3);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-cancel::before {
+        content: '↩️';
+        font-size: 1.2rem;
+    }
+
+    .btn-cancel:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 35px rgba(108, 117, 125, 0.4);
+        color: white;
+        text-decoration: none;
+    }
+
+    .btn-delete-confirm {
+        background: linear-gradient(135deg, #dc3545, #c82333);
+        color: white;
+        padding: 1.2rem 2.5rem;
+        border: none;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 25px rgba(220, 53, 69, 0.3);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-delete-confirm::before {
+        content: '🗑️';
+        font-size: 1.2rem;
+    }
+
+    .btn-delete-confirm:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 35px rgba(220, 53, 69, 0.4);
+        background: linear-gradient(135deg, #c82333, #a71e2a);
+    }
+
+    .actividad-name-highlight {
+        background: linear-gradient(135deg, rgba(220, 53, 69, 0.1), rgba(200, 35, 51, 0.1));
+        padding: 0.5rem 1rem;
+        border-radius: 15px;
+        font-weight: 800;
+        color: #dc3545;
+        display: inline-block;
+        margin: 0.5rem 0;
+        border: 2px solid rgba(220, 53, 69, 0.2);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .page-header {
+            padding: 2rem 1.5rem;
+            margin: 1rem;
+        }
+
+        .page-header h2 {
+            font-size: 2rem;
+        }
+
+        .confirmation-container {
+            margin: 1rem;
+            padding: 2rem 1.5rem;
+        }
+
+        .info-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .actions-container {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .btn-cancel,
+        .btn-delete-confirm {
+            width: 100%;
+            max-width: 300px;
+            justify-content: center;
+        }
+
+        .alert-warning {
+            padding: 1.5rem;
+            font-size: 1rem;
+        }
+
+        .actividad-info {
+            padding: 1.5rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .confirmation-container {
+            padding: 1.5rem 1rem;
+        }
+
+        .info-item {
+            padding: 0.8rem;
+        }
+
+        .info-label {
+            min-width: 60px;
+            font-size: 0.8rem;
+        }
+
+        .info-value {
+            font-size: 0.9rem;
+        }
+
+        .btn-cancel,
+        .btn-delete-confirm {
+            padding: 1rem 2rem;
+            font-size: 1rem;
+        }
+
+        .categoria-badge,
+        .estado-badge,
+        .fecha-badge,
+        .regional-badge,
+        .centro-badge,
+        .duracion-badge {
+            font-size: 0.7rem;
+            padding: 0.3rem 0.6rem;
+        }
+    }
+</style>
+
+<div class="page-header">
+    <h2>🗑️ Confirmar Eliminación de Actividad</h2>
+</div>
+
+<div class="confirmation-container">
+    <div class="alert-warning">
+        <strong>⚠️ ¡ATENCIÓN!</strong>
+        ¿Estás completamente seguro de que deseas eliminar la actividad 
+        <span class="actividad-name-highlight">"{{ actividad.nombre }}"</span>?
+        <br><br>
+        <strong>Esta acción es IRREVERSIBLE</strong> y eliminará permanentemente toda la información asociada a esta actividad del sistema.
+    </div>
+
+    <div class="actividad-info">
+        <h4 style="color: #2c3e50; font-weight: 800; margin-bottom: 1.5rem; font-size: 1.3rem;">
+            📋 Información de la Actividad a Eliminar
+        </h4>
+        
+        <div class="info-grid">
+            <div class="info-item">
+                <span class="info-label">🔢 ID:</span>
+                <span class="info-value">{{ actividad.id }}</span>
+            </div>
+            
+            <div class="info-item">
+                <span class="info-label">🎨 Nombre:</span>
+                <span class="info-value">{{ actividad.nombre }}</span>
+            </div>
+            
+            <div class="info-item">
+                <span class="info-label">📂 Categoría:</span>
+                <span class="categoria-badge {{ actividad.categoria }}">
+                    {{ actividad.get_categoria_display }}
+                </span>
+            </div>
+            
+            <div class="info-item">
+                <span class="info-label">📍 Estado:</span>
+                <span class="estado-badge {{ actividad.estado }}">
+                    {{ actividad.get_estado_display }}
+                </span>
+            </div>
+            
+            <div class="info-item">
+                <span class="info-label">📅 Inicio:</span>
+                <span class="fecha-badge">{{ actividad.fecha_inicio|date:"d/m/Y" }}</span>
+            </div>
+            
+            <div class="info-item">
+                <span class="info-label">🏁 Fin:</span>
+                <span class="fecha-badge">{{ actividad.fecha_fin|date:"d/m/Y" }}</span>
+            </div>
+            
+            <div class="info-item">
+                <span class="info-label">⏱️ Duración:</span>
+                <span class="duracion-badge">{{ actividad.duracion_dias }} días</span>
+            </div>
+            
+            <div class="info-item">
+                <span class="info-label">🌍 Regional:</span>
+                <span class="regional-badge">{{ actividad.regional }}</span>
+            </div>
+        </div>
+
+        {% if actividad.centro_formacion %}
+        <div class="info-item" style="margin-top: 1rem;">
+            <span class="info-label">🏢 Centro:</span>
+            <span class="centro-badge">{{ actividad.centro_formacion }}</span>
+        </div>
+        {% endif %}
+
+        {% if actividad.descripcion %}
+        <div class="descripcion-box">
+            <span class="info-label">📋 Descripción:</span>
+            <div class="info-value">{{ actividad.descripcion }}</div>
+        </div>
+        {% endif %}
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="actions-container">
+            <a href="{% url 'actividades:lista_actividades' %}" class="btn-cancel">
+                Cancelar y Volver
+            </a>
+            <button type="submit" class="btn-delete-confirm">
+                Confirmar Eliminación
+            </button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

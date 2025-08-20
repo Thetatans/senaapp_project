@@ -8,4 +8,5 @@ urlpatterns = [
     path('lista_actividades/', views.lista_actividades, name='lista_actividades'),
     path('lista_actividades/actividad/<int:actividad_id>/', views.detalles_actividad, name='detalles_actividad'),
     path('crear_actividad/', views.ActividadFormView.as_view(), name='crear_actividad'),
+    path('eliminar/<int:pk>/', views.ActividadDeleteView.as_view(), name='eliminar_actividad'),
     ]
